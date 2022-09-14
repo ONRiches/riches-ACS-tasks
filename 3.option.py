@@ -8,7 +8,7 @@ notfound = False
 # Use a while statement to keep prompting the user to enter an input until it is in the correct range
 while not(notfound):
 
-    # check if the number is below 1
+    # check if the number is in the correct range
     if selection < 1 or selection > 3:
         print("Enter a number between 1 - 3")
         selection = int(input())
