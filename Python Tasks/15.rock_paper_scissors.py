@@ -6,7 +6,7 @@ choice = input()
 
 value = random.randint(1, 3)
 
-# convert the input to a number
+# convert the input to a number     
 RPS = ord(choice) % 10
 
 # convert the 0 of a P to a 1
