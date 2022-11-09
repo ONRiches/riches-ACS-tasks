@@ -1,4 +1,5 @@
 import pygame
+import winsound
 # -- Global Constants
 ball_width = 20
 x_val = 150
@@ -35,11 +36,40 @@ while not done:
  # -- Screen background is BLACK
  screen.fill (BLACK)
  # -- Draw here
+ 
  pygame.draw.rect(screen, BLUE, (x_val,y_val,ball_width,ball_width))
- pygame.draw.circle(screen, YELLOW, (40,100),40,0)
+ 
+ #pygame.draw.circle(screen, BLUE, (x_val,y_val),ball_width,0)
 
  x_val = x_val + x_direction
  y_val = y_val + y_direction
+
+ bottom_left_x = x_val
+ bottom_left_y = y_val + ball_width
+ bottom_right_x = x_val + ball_width
+ bottom_right_y = y_val + ball_width
+ top_right_x = x_val + ball_width
+ top_right_y = y_val
+
+ if bottom_left_y == 480:
+  y_direction = y_direction * -1
+  winsound.Beep(700,40)
+ #End if
+ 
+ if bottom_right_x == 640:
+  x_direction = x_direction * -1
+  winsound.Beep(700,40)
+ #End if
+
+ if x_val == 0:
+  x_direction = x_direction * -1
+  winsound.Beep(700,40)
+ #End if
+
+ if y_val == 0:
+  y_direction = y_direction * -1
+  winsound.Beep(700,40)
+ #End if
 
  # -- flip display to reveal new position of objects
  pygame.display.flip()
