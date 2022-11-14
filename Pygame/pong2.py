@@ -2,14 +2,14 @@ import pygame
 import winsound
 # -- Global Constants
 ball_width = 20
-x_val = 150
-y_val = 200
-x_direction = 1
-y_direction = 1
+x_val = 320
+y_val = 240
 x_padd = 0
 y_padd = 20
 padd_length = 15
 padd_width = 60
+xspeed = 1
+yspeed = 1
 # -- Colours
 BLACK = (0,0,0)
 WHITE = (255,255,255)
@@ -47,8 +47,8 @@ while not done:
  
  #pygame.draw.circle(screen, BLUE, (x_val,y_val),ball_width,0)
 
- x_val = x_val + x_direction
- y_val = y_val + y_direction
+ x_val = x_val + xspeed
+ y_val = y_val + yspeed
 
  bottom_left_x = x_val
  bottom_left_y = y_val + ball_width
@@ -57,24 +57,57 @@ while not done:
  top_right_x = x_val + ball_width
  top_right_y = y_val
 
- if bottom_left_y == 480:
-  y_direction = y_direction * -1
+ if bottom_left_y >= 480:
+  yspeed = yspeed * -1
   winsound.Beep(700,40)
  #End if
  
- if bottom_right_x == 640:
-  x_direction = x_direction * -1
+ if bottom_right_x >= 640:
+  xspeed = xspeed * -1
   winsound.Beep(700,40)
  #End if
 
- if x_val == 0:
-  x_direction = x_direction * -1
+ if top_right_x < -4:
+  winsound.Beep(400,800)
+  x_val = 640/2
+  y_val = 480/2
+  xspeed = xspeed * -1
+ #End if
+
+ if y_val <= 0:
+  yspeed = yspeed * -1
   winsound.Beep(700,40)
  #End if
 
- if y_val == 0:
-  y_direction = y_direction * -1
-  winsound.Beep(700,40)
+ if (y_val >= y_padd):
+  if (y_val <= y_padd + 60):
+    if x_val <= x_padd + 15:
+      xspeed = xspeed * - 1
+      xspeed = xspeed + 1
+
+      if(yspeed > 0):
+        yspeed = yspeed + 1
+      else:
+        yspeed = yspeed - 1
+
+      
+      winsound.Beep(1200,40)
+    #End if
+  #End if
+ elif (bottom_left_y >= y_padd):
+  if (bottom_left_y <= y_padd + 60):
+    if x_val <= x_padd + 15:
+      xspeed = xspeed * - 1
+      xspeed = xspeed + 1
+
+      if(yspeed > 0):
+        yspeed = yspeed + 1
+      else:
+        yspeed = yspeed - 1
+      
+      winsound.Beep(1200,40)
+    #End if
+  #End if
  #End if
 
  for event in pygame.event.get():
@@ -83,10 +116,12 @@ while not done:
  #End If
  if event.type == pygame.KEYDOWN:
   if event.key == pygame.K_UP:
-  # - write logic that happens on key press here
-   y_padd = y_padd - 5
+    if y_padd > 0:
+      # - write logic that happens on key press here
+      y_padd = y_padd - 5
   elif event.key == pygame.K_DOWN:
-   y_padd = y_padd + 5
+    if y_padd < 420:
+      y_padd = y_padd + 5
  # - write logic that happens on key press here
  #End If
  #End If
