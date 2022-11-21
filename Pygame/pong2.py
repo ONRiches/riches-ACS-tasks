@@ -45,10 +45,10 @@ while not done:
   if event.key == pygame.K_UP:
     if y_padd > 0:
       # - write logic that happens on key press here
-      y_padd = y_padd - 5
+      y_padd = y_padd - 7
   elif event.key == pygame.K_DOWN:
     if y_padd < 420:
-      y_padd = y_padd + 5
+      y_padd = y_padd + 7
     #End If
   #End If
 
