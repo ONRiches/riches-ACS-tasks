@@ -94,12 +94,12 @@ while not done:
   if (y_val <= y_padd + 60):
     if x_val <= x_padd + 15:
       xspeed = xspeed * - 1
-      xspeed = xspeed + 1
+      xspeed = xspeed + 0.5
 
       if(yspeed > 0):
-        yspeed = yspeed + 1
+        yspeed = yspeed + 0.5
       else:
-        yspeed = yspeed - 1
+        yspeed = yspeed - 0.5
       #End if
 
       score = score + 1
