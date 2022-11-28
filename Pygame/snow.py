@@ -24,7 +24,7 @@ class Snow(pygame.sprite.Sprite):
   self.rect.x = random.randrange(0, 640)
   self.rect.y = random.randrange(-15, 480)
   # Set speed of the sprite
-  self.speed = speed 
+  self.speed = speed
  #End Procedure
 
   # Class update function - runs for each pass through the game loop
@@ -35,10 +35,8 @@ class Snow(pygame.sprite.Sprite):
    self.rect.y = -5
    self.rect.x = random.randrange(1,640)
 
- # Make the snow jiggle
-  if self.rect.y < 480:
-   self.rect.x = self.rect.x + random.randrange(-1,1)
-   self.rect.x = self.rect.x - random.randrange(-1,1)
+  self.rect.x = self.rect.x + random.randrange(-1,1)
+  self.rect.x = self.rect.x - random.randrange(-1,1)
 
 #End class
 
@@ -58,10 +56,10 @@ all_sprites_group = pygame.sprite.Group()
 # -- Manages how fast screen refreshes
 clock = pygame.time.Clock() 
 # Create the snowflakes
-number_of_flakes = 100 # we are creating 100 snowflakes
+number_of_flakes = 150 # we are creating 100 snowflakes
 for x in range (number_of_flakes):
  # draw the snow and make them fall at different speeds.
- my_snow = Snow(WHITE, 5, 5, random.randrange(1,2)) # snowflakes are white with size 5 by 5 px
+ my_snow = Snow(WHITE, 2, 2, random.randrange(1,3)) # snowflakes are white with size 5 by 5 px
  snow_group.add (my_snow) # adds the new snowflake to the group of snowflakes
  all_sprites_group.add (my_snow) # adds it to the group of all Sprites
 #Next x
