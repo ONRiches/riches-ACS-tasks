@@ -37,8 +37,8 @@ class Snow(pygame.sprite.Sprite):
 
  # Make the snow jiggle
   if self.rect.y < 480:
-   self.rect.x = self.rect.x + random.randrange(0,2)
-   self.rect.x = self.rect.x - random.randrange(0,2)
+   self.rect.x = self.rect.x + random.randrange(-1,1)
+   self.rect.x = self.rect.x - random.randrange(-1,1)
 
 #End class
 
