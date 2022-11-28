@@ -135,8 +135,8 @@ while not done:
 
  pygame.draw.rect(screen, WHITE, (x_padd,y_padd,padd_length,padd_width))
 
- score1 = font.render(str(score), True, (255, 255, 255))
- screen.blit(score1, (500, 50))
+ score1 = font.render("Score: " + str(score), True, (255, 255, 255))
+ screen.blit(score1, (500, 10))
 
  #Next event 
 
