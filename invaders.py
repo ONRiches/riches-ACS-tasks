@@ -44,17 +44,23 @@ class player(pygame.sprite.Sprite):
   self.image.fill(color)
   # Set the position of the sprite
   self.rect = self.image.get_rect()
-  self.rect.x = 50
-  self.rect.y = 50
-  # Set the speed
+  self.rect.x = 300
+  self.rect.y = 400
+  # Set speed
   self.speed = 0
- #End Procedure
 
  def get_x(self):
   return self.rect.x
 
+ def get_y(self):
+  return self.rect.y
+
+ def player_set_speed(self,speed):
+  self.rect.x = self.rect.x + speed
+
  # Class update function - runs for each pass through the game loop
  def update(self):
+  #self.rect.x = self.rect.x + self.speed
   print("")
 #End class
 
@@ -69,12 +75,12 @@ class Bullet(pygame.sprite.Sprite):
     self.image.fill(color)
     # Set the position of the sprite
     self.rect = self.image.get_rect()
-    self.rect.x = player.get_x() + 10
-    self.rect.y = 50
+    self.rect.x = player.get_x(self)
+    self.rect.y = player.get_y(self)
 
   def update(self):
     # Shoot Bullet 
-    self.rect.y = self.rect.y - 3
+    self.rect.y = self.rect.y - 4
     pygame.sprite.groupcollide(bullet_group, invader_group, True, True)
 
 # -- Initialise PyGame
@@ -106,10 +112,10 @@ my_player = player(YELLOW, 10, 10)
 all_sprites_group.add(my_player)
 
 def fire():
-  print("shot")
-  mybullet = Bullet(WHITE, 3, 7)
-  all_sprites_group.add(mybullet)
-  bullet_group.add(mybullet)
+  print("s")
+  my_bullet = Bullet(WHITE, 5, 5)
+  all_sprites_group.add(my_bullet)
+  bullet_group.add(my_bullet)
 
 ### -- Game Loop
 while not done:
@@ -119,17 +125,21 @@ while not done:
     done = True
   elif event.type == pygame.KEYDOWN: # - a key is down
     if event.key == pygame.K_LEFT: # - if the left key pressed
-      player.player_set_speed(-3) # speed set to -3
+      my_player.player_set_speed(-3) # speed set to -3
     elif event.key == pygame.K_RIGHT: # - if the right key pressed
-      player.player_set_speed(3) # speed set to 3
+      my_player.player_set_speed(3) # speed set to 3
   elif event.type == pygame.KEYUP: # - a key released
     if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-      player.player_set_speed(0) # speed set to 0
+      my_player.player_set_speed(0) # speed set to 0
+  if event.type == pygame.QUIT:
+    done = True
+  elif event.type == pygame.KEYDOWN:
+    if event.key == pygame.K_UP:
+      fire()
 
  #Next event
  # -- Game logic goes after this comment
-  # -- when invader hits the player add 5 to score.
- player_hit_group = pygame.sprite.spritecollide(player, invader_group, True)
+ player_hit_group = pygame.sprite.spritecollide(my_player, invader_group, True)
  all_sprites_group.update()
  # -- Screen background is BLACK
  screen.fill (BLACK)
