@@ -44,7 +44,7 @@ class player(pygame.sprite.Sprite):
   self.image.fill(color)
   # Set the position of the sprite
   self.rect = self.image.get_rect()
-  self.rect.x = 300
+  self.rect.x = 320
   self.rect.y = 400
   # Set speed
   self.speed = 0
@@ -112,42 +112,48 @@ my_player = player(YELLOW, 10, 10)
 all_sprites_group.add(my_player)
 
 def fire():
-  print("s")
   my_bullet = Bullet(WHITE, 5, 5)
   all_sprites_group.add(my_bullet)
   bullet_group.add(my_bullet)
 
-### -- Game Loop
+#Game Loop
 while not done:
- # -- User input and controls
- for event in pygame.event.get():
-  if event.type == pygame.QUIT:
-    done = True
-  elif event.type == pygame.KEYDOWN: # - a key is down
-    if event.key == pygame.K_LEFT: # - if the left key pressed
-      my_player.player_set_speed(-3) # speed set to -3
-    elif event.key == pygame.K_RIGHT: # - if the right key pressed
-      my_player.player_set_speed(3) # speed set to 3
-  elif event.type == pygame.KEYUP: # - a key released
-    if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-      my_player.player_set_speed(0) # speed set to 0
-  if event.type == pygame.QUIT:
-    done = True
-  elif event.type == pygame.KEYDOWN:
-    if event.key == pygame.K_UP:
-      fire()
+  # User input and controls
+  for event in pygame.event.get():
+    if event.type == pygame.QUIT:
+      done = True
+    elif event.type == pygame.KEYDOWN:
+      if event.key == pygame.K_LEFT:
+        print()
+      elif event.key == pygame.K_RIGHT:
+        print()
+      elif event.key == pygame.K_SPACE:
+        print("shoot")
+        fire()
+    # Code that somehow makes moving smooth
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT]:
+        if my_player.rect.x <= 0:
+            my_player.rect.x = 0
+        else:
+            my_player.rect.x = my_player.rect.x - 15
+    if keys[pygame.K_RIGHT]:
+        if my_player.rect.x >= 640:
+            my_player.rect.x = 640
+        else:
+            my_player.rect.x = my_player.rect.x + 15
 
  #Next event
  # -- Game logic goes after this comment
- player_hit_group = pygame.sprite.spritecollide(my_player, invader_group, True)
- all_sprites_group.update()
+  player_hit_group = pygame.sprite.spritecollide(my_player, invader_group, True)
+  all_sprites_group.update()
  # -- Screen background is BLACK
- screen.fill (BLACK)
+  screen.fill (BLACK)
  # -- Draw here
- all_sprites_group.draw (screen)
+  all_sprites_group.draw (screen)
  # -- flip display to reveal new position of objects
- pygame.display.flip()
+  pygame.display.flip()
  # - The clock ticks over
- clock.tick(60)
+  clock.tick(60)
 #End While - End of game loop
 pygame.quit()
