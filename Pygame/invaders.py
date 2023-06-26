@@ -1,6 +1,7 @@
 import pygame
 import random
 import math
+import winsound
 
 # -- Global Constants
 
@@ -30,6 +31,8 @@ class Invader(pygame.sprite.Sprite):
   # Class update function - runs for each pass through the game loop
  def update(self):
   self.rect.y = self.rect.y + self.speed
+  self.rect.x = self.rect.x + random.randint(1,3)
+  self.rect.x = self.rect.x - random.randint(1,3)
 
 #End class
 
@@ -105,7 +108,7 @@ clock = pygame.time.Clock()
 number_of_invaders = 20 # we are creating 10 invaders
 for x in range (number_of_invaders):
  # draw the snow and make them fall at different speeds.
- my_invader = Invader(BLUE, 10, 3) # snowflakes are white with size 10 by 10 px
+ my_invader = Invader(BLUE, 15, 5) # snowflakes are white with size 10 by 10 px
  invader_group.add (my_invader) # adds the new snowflake to the group of snowflakes
  all_sprites_group.add (my_invader) # adds it to the group of all Sprites
 #Next x
@@ -143,7 +146,7 @@ while not done:
  all_sprites_group.update()
  for z in player_hit_group: 
   my_player.lives = my_player.lives - 1
-  print (my_player.lives)
+  winsound.Beep(1000,1000)
  # -- Screen background is BLACK
  screen.fill (BLACK)
  # -- Draw here

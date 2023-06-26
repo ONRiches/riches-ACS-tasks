@@ -77,7 +77,8 @@ while not done:
  #End if
 
  if top_right_x < -4:
-  winsound.Beep(400,800)
+  winsound.Beep(500,500)
+  winsound.Beep(200,1000)
   x_val = 320
   y_val = 240
   xspeed = 1
