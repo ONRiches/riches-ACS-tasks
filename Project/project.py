@@ -1,8 +1,9 @@
 import pygame
+vec = pygame.math.Vector2
 
 # -- Global Constants
 GRAVITY = 9.8
-VERTSPEED = 20
+JUMPSPEED = 20
 
 # -- Colours
 BLACK = (0, 0, 0)
@@ -13,17 +14,19 @@ YELLOW = (255, 255, 0)
 # -- Classes
 class player(pygame.sprite.Sprite):
     # --- Constructor Function ---
-    def __init__(self, width, height):
+    def __init__(self):
         super().__init__()
 
         # --- Create Player ---
-        self.image = pygame.Surface((width, height))
+        self.image = pygame.Surface((30, 50))
         self.image.fill(WHITE)
 
         # --- Set Player Position ---
         self.rect = self.image.get_rect()
         self.rect.x = 100
         self.rect.y = 835
+
+    # --- Functions ---
 
     def get_x(self):
         return self.rect.x
@@ -43,11 +46,10 @@ class player(pygame.sprite.Sprite):
     def stop(self):
         player.playerSetSpeed(myplayer, 0)
 
-    def jump(self,jumpspeed):
-        jumpstrength = jumpspeed
-        while self.rect.x < 900:
-            self.rect.x = self.rect.x + jumpstrength
-            jumpstrength = jumpstrength - 1 
+    def jump(self):
+        print("jumped")
+        if self.rect.y == 835:
+            self.rect.y = self.rect.y - 100
 
 
 
@@ -82,7 +84,7 @@ allspritegroup = pygame.sprite.Group()
 platformgroup = pygame.sprite.Group()
 
 
-myplayer = player(50, 50)
+myplayer = player()
 platform1 = platform(200, 25, WHITE, 500, 500)
 platform2 = platform(100, 25, WHITE, 900, 300)
 
@@ -115,9 +117,8 @@ while not done:
         else:
             myplayer.rect.x = myplayer.rect.x + 15
     if keys[pygame.K_UP]:
-        while myplayer.rect.x < 900:
-            myplayer.rect.x = myplayer.rect.x + VERTSPEED
-            VERTSPEED = VERTSPEED - GRAVITY 
+        myplayer.jump()
+
         
 
     # -- Screen background is BLACK
