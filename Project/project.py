@@ -2,8 +2,8 @@ import pygame
 vec = pygame.math.Vector2
 
 # -- Global Constants
-GRAVITY = 9.8
-JUMPSPEED = 20
+GRAVITY = 1
+JUMPSPEED = -20
 
 # -- Colours
 BLACK = (0, 0, 0)
@@ -33,6 +33,9 @@ class player(pygame.sprite.Sprite):
 
     def get_y(self):
         return self.rect.y
+    
+    def getVertSpeed(self):
+        return self.vel
 
     def playerSetSpeed(self, speed):
         self.rect.x = self.rect.x + speed
@@ -46,11 +49,25 @@ class player(pygame.sprite.Sprite):
     def stop(self):
         player.playerSetSpeed(myplayer, 0)
 
-    def jump(self):
-        print("jumped")
-        if self.rect.y == 835:
-            self.rect.y = self.rect.y - 100
+    def checkMoving(self):
+        if player.getVertSpeed(self) == 0:
+            return False
+        else:
+            return True
+        
+    def jumpinit(self,vertSpeed):
+        self.vel = vertSpeed
+        while player.checkCollion(self) == True:
+            player.jump(self)
 
+    def jump(self):
+        self.rect.y = self.rect.y + self.vel
+        self.vel = self.vel + GRAVITY
+
+    def checkCollion(self):
+        if pygame.sprite.spritecollide(myplayer,platformgroup,False) == [] or self.rect.y > 830:
+            return True
+       
 
 
 class platform(pygame.sprite.Sprite):
@@ -82,13 +99,14 @@ clock = pygame.time.Clock()
 
 allspritegroup = pygame.sprite.Group()
 platformgroup = pygame.sprite.Group()
+playergroup = pygame.sprite.Group()
 
 
 myplayer = player()
 platform1 = platform(200, 25, WHITE, 500, 500)
 platform2 = platform(100, 25, WHITE, 900, 300)
 
-
+playergroup.add(myplayer)
 allspritegroup.add(myplayer)
 platformgroup.add(platform1)
 platformgroup.add(platform2)
@@ -117,7 +135,7 @@ while not done:
         else:
             myplayer.rect.x = myplayer.rect.x + 15
     if keys[pygame.K_UP]:
-        myplayer.jump()
+        myplayer.jump(JUMPSPEED)
 
         
 
