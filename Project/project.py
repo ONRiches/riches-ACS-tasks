@@ -47,22 +47,22 @@ class player(pygame.sprite.Sprite):
         self.rect.x = self.rect.x + speed
 
     def moveRight(self):
-        player.playerSetSpeed(myplayer, 3)
+        self.playerSetSpeed(myplayer, 3)
 
     def moveLeft(self):
-        player.playerSetSpeed(myplayer, -3)
+        self.playerSetSpeed(myplayer, -3)
 
     def stop(self):
-        player.playerSetSpeed(myplayer, 0)
+        self.playerSetSpeed(myplayer, 0)
 
     def checkMoving(self):
-        if player.getVertSpeed(self) == 0:
+        if self.getVertSpeed(self) == 0:
             return False
         else:
             return True
         
     def jumpinit(self,vertSpeed):
-        if player.checkCollision(self) == True:
+        if self.checkCollision(self) == True:
             self.jump(vertSpeed)
 
     def jump(self,vertSpeed):
