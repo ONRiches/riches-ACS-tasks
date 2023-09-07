@@ -24,7 +24,7 @@ YELLOW = (255, 255, 0)
 class Background():
 
     def __init__(self):
-        self.ground_image = pygame.image.load("Project/ground.png").convert()
+        self.ground_image = pygame.image.load("Project/ground.png").convert_alpha()
         self.ground_width = self.ground_image.get_width()
         self.ground_height = self.ground_image.get_height()
 
@@ -62,7 +62,7 @@ class player(pygame.sprite.Sprite):
         # --- Set Player Position ---
         self.rect = self.image.get_rect()
         self.rect.x = Width / 3
-        self.rect.y = Height - 64 - 20
+        self.rect.y = Height - 60 - 20
 
     # --- Functions ---
 
@@ -147,14 +147,14 @@ myplayer = player()
 
 bg = Background()
 
-#platform1 = platform(200, 25, WHITE, 500, 500)
-#platform2 = platform(100, 25, WHITE, 900, 300)
+platform1 = platform(200, 25, WHITE, 500, 500)
+platform2 = platform(100, 25, WHITE, 900, 300)
 
 playergroup.add(myplayer)
 allspritegroup.add(myplayer)
-#platformgroup.add(platform1)
-#platformgroup.add(platform2)
-#allspritegroup.add(platformgroup)
+platformgroup.add(platform1)
+platformgroup.add(platform2)
+allspritegroup.add(platformgroup)
 
 # -- Game Loop --
 while not done:
@@ -192,7 +192,7 @@ while not done:
         myplayer.jumpinit(JUMPSPEED)
 
     # -- Prevent player from falling through the floor --
-    if myplayer.rect.y < Height - bg.get_ground_height() - 20:
+    if myplayer.rect.y <= Height - 62 - 20:
         myplayer.rect.y = myplayer.rect.y + GRAVITY
 
         
