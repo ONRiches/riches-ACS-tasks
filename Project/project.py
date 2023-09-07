@@ -6,10 +6,12 @@ vec = pygame.math.Vector2
 GRAVITY = 8
 JUMPSPEED = -20
 
-Width = 1200
-Height = 600
+Width = 768
+Height = 432
 
-bg = pygame.image.load("Project/TreesBG.jpg").convert
+FPS = 60
+
+scroll = 0
 
 # -- Colours
 BLACK = (0, 0, 0)
@@ -18,19 +20,49 @@ BLUE = (50, 50, 255)
 YELLOW = (255, 255, 0)
 
 # -- Classes
+
+class Background():
+
+    def __init__(self):
+        self.ground_image = pygame.image.load("Project/ground.png").convert()
+        self.ground_width = self.ground_image.get_width()
+        self.ground_height = self.ground_image.get_height()
+
+        self.bg_images = []
+        for i in range(1, 6):
+            self.bg_image = pygame.image.load(f"Project/plx-{i}.png").convert_alpha()
+            self.bg_images.append(self.bg_image)
+        self.bg_width = self.bg_images[0].get_width()
+
+
+    def draw_bg(self):
+        for x in range(1000):
+            speed = 1
+            for i in self.bg_images:
+                screen.blit(i, ((x * self.bg_width) - scroll * speed, 0))
+                speed += 0.2
+
+    def draw_ground(self):
+        for x in range(1000):
+            screen.blit(self.ground_image, ((x * self.ground_width) - scroll * 2.5, Height - self.ground_height))
+
+    def get_ground_height(self):
+        return self.ground_height
+
+
 class player(pygame.sprite.Sprite):
     # --- Constructor Function ---
     def __init__(self):
         super().__init__()
 
         # --- Create Player ---
-        self.image = pygame.Surface((30, 50))
+        self.image = pygame.Surface((10, 20))
         self.image.fill(WHITE)
 
         # --- Set Player Position ---
         self.rect = self.image.get_rect()
-        self.rect.x = 500
-        self.rect.y = 550
+        self.rect.x = Width / 3
+        self.rect.y = Height - 64 - 20
 
     # --- Functions ---
 
@@ -60,10 +92,6 @@ class player(pygame.sprite.Sprite):
             return False
         else:
             return True
-        
-    def jumpinit(self,vertSpeed):
-        if self.checkCollision(self) == True:
-            self.jump(vertSpeed)
 
     def jump(self,vertSpeed):
             self.vel = vertSpeed
@@ -75,6 +103,10 @@ class player(pygame.sprite.Sprite):
     def checkCollision(self):
         if self.rect.colliderect(myplayer.rect):
             return True
+        
+    def jumpinit(self,vertSpeed):
+        if self.checkCollision() == True:
+            self.jump(vertSpeed)
        
 
 
@@ -91,6 +123,7 @@ class platform(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = posX
         self.rect.y = posY
+
 
 
 # -- Initialise PyGame --
@@ -111,6 +144,9 @@ playergroup = pygame.sprite.Group()
 
 
 myplayer = player()
+
+bg = Background()
+
 #platform1 = platform(200, 25, WHITE, 500, 500)
 #platform2 = platform(100, 25, WHITE, 900, 300)
 
@@ -120,27 +156,15 @@ allspritegroup.add(myplayer)
 #platformgroup.add(platform2)
 #allspritegroup.add(platformgroup)
 
-
-# -- Load image for the background, and change size to screen size --
-bg1 = pygame.image.load("Project/TreesBG.jpg").convert()
-bg = pygame.transform.scale(bg1, (Width, Height))
-bg_width = bg.get_width()
-
-scroll = 0
-tiles = math.ceil(Width / bg_width) + 1
-
 # -- Game Loop --
 while not done:
 
+    clock.tick(FPS)
 
-    # -- Scroll the background image --
-    for i in range(0, tiles):
-        screen.blit(bg, (i * bg_width + scroll, 0))
+    bg.draw_bg()
+    bg.draw_ground()
 
-    scroll -= 5
-
-    if abs(scroll) > bg_width:
-        scroll = 0
+    scroll += 2
 
 
 
@@ -168,7 +192,7 @@ while not done:
         myplayer.jumpinit(JUMPSPEED)
 
     # -- Prevent player from falling through the floor --
-    if myplayer.rect.y < 550:
+    if myplayer.rect.y < Height - bg.get_ground_height() - 20:
         myplayer.rect.y = myplayer.rect.y + GRAVITY
 
         
@@ -180,7 +204,5 @@ while not done:
     allspritegroup.draw(screen)
     # -- flip display to reveal new position of objects
     pygame.display.flip()
-    # - The clock ticks over
-    clock.tick(60)
 # End While - End of game loop
 pygame.quit()
