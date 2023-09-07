@@ -24,13 +24,13 @@ YELLOW = (255, 255, 0)
 class Background():
 
     def __init__(self):
-        self.ground_image = pygame.image.load("Project/ground.png").convert_alpha()
+        self.ground_image = pygame.image.load("Project/Images/ground.png").convert_alpha()
         self.ground_width = self.ground_image.get_width()
         self.ground_height = self.ground_image.get_height()
 
         self.bg_images = []
         for i in range(1, 6):
-            self.bg_image = pygame.image.load(f"Project/plx-{i}.png").convert_alpha()
+            self.bg_image = pygame.image.load(f"Project/Images/plx-{i}.png").convert_alpha()
             self.bg_images.append(self.bg_image)
         self.bg_width = self.bg_images[0].get_width()
 
@@ -54,6 +54,7 @@ class player(pygame.sprite.Sprite):
     # --- Constructor Function ---
     def __init__(self):
         super().__init__()
+        pygame.sprite.Sprite.__init__(self)
 
         # --- Create Player ---
         self.image = pygame.Surface((10, 20))
@@ -114,6 +115,7 @@ class platform(pygame.sprite.Sprite):
     # --- Constructor Function ---
     def __init__(self, width, height, color, posX, posY):
         super().__init__()
+        pygame.sprite.Sprite.__init__(self)
 
         # --- Create Platform ---
         self.image = pygame.Surface([width, height])
@@ -123,6 +125,11 @@ class platform(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = posX
         self.rect.y = posY
+
+class coins(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
 
 
 
@@ -142,18 +149,12 @@ allspritegroup = pygame.sprite.Group()
 platformgroup = pygame.sprite.Group()
 playergroup = pygame.sprite.Group()
 
-
 myplayer = player()
 
 bg = Background()
 
-platform1 = platform(200, 25, WHITE, 500, 500)
-platform2 = platform(100, 25, WHITE, 900, 300)
-
 playergroup.add(myplayer)
 allspritegroup.add(myplayer)
-platformgroup.add(platform1)
-platformgroup.add(platform2)
 allspritegroup.add(platformgroup)
 
 # -- Game Loop --
@@ -166,28 +167,20 @@ while not done:
 
     scroll += 2
 
-
-
     # -- User input and controls
     for event in pygame.event.get():
+
         if event.type == pygame.QUIT:
             done = True
         # End If
-        # Next event
+
+    # Next Event
+
+
         # -- Game logic goes after this comment
         allspritegroup.update()
     
     keys = pygame.key.get_pressed()
-    #if keys[pygame.K_LEFT]:
-        #if myplayer.rect.x < 0:
-         #   myplayer.rect.x = 0
-        #else:
-         #   myplayer.rect.x = myplayer.rect.x - 15
-    #if keys[pygame.K_RIGHT]:
-        #if myplayer.rect.x >= 1440 - 50:
-         #   myplayer.rect.x = 1440 - 50
-        #else:
-         #   myplayer.rect.x = myplayer.rect.x + 15
     if keys[pygame.K_UP]:
         myplayer.jumpinit(JUMPSPEED)
 
@@ -195,9 +188,7 @@ while not done:
     if myplayer.rect.y <= Height - 62 - 20:
         myplayer.rect.y = myplayer.rect.y + GRAVITY
 
-        
 
-    # -- Screen background is BLACK
    # screen.fill(BLACK)
     pygame.display.update()
     # -- Draw here

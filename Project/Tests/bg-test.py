@@ -14,23 +14,18 @@ pygame.display.set_caption("Endless Scroll")
 
 bg1 = pygame.image.load("Project/plx-1.png").convert()
 bg1_width = bg1.get_width()
-bg1.append(bg1)
 
 bg2 = pygame.image.load("Project/plx-2.png").convert()
 bg2_width = bg2.get_width()
-bg2.append(bg2)
 
 bg3 = pygame.image.load("Project/plx-3.png").convert()
 bg3_width = bg3.get_width()
-bg3.append(bg3)
 
 bg4 = pygame.image.load("Project/plx-4.png").convert()
 bg4_width = bg4.get_width()
-bg4.append(bg4)
 
 bg5 = pygame.image.load("Project/plx-5.png").convert()
 bg5_width = bg5.get_width()
-bg5.append(bg5)
 
 
 scroll = 0
