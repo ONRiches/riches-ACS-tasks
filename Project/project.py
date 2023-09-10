@@ -11,7 +11,7 @@ JUMPSPEED = -10
 
 BGSPEED = 1
 FGSPEED = 2.5
-COINSPEED = -4.5
+COINSPEED = -5.5
 
 Width = 768
 Height = 432
@@ -22,12 +22,12 @@ scroll = 0
 
 MaxCoins = 25
 
-font1 = pygame.font.Font('Project/04B_30__.TTF', 30)
+font1 = pygame.font.Font('Project/Fonts/04B_30__.TTF', 30)
 
 # -- Sprite Groups --
 
 allspritegroup = pygame.sprite.Group()
-platformgroup = pygame.sprite.Group()
+barriergroup = pygame.sprite.Group()
 coingroup = pygame.sprite.Group()
 playergroup = pygame.sprite.Group()
 
@@ -78,16 +78,25 @@ class Scoreboard():
         img = font.render(text, True, text_col)
         screen.blit(img, (x, y))
 
-    def ncoins(self):
+    def pickupcoins(self):
         if pygame.sprite.spritecollide(myplayer, coingroup, True):
             self.score += 1
         score = str(self.score)
         if self.score > 99:
-            self.draw_text(score, font1, WHITE, Width - 80, 20)
+            self.draw_text(score, font1, WHITE, Width - 85, 20)
         elif self.score > 9:
-            self.draw_text(score, font1, WHITE, Width - 60, 20)
+            self.draw_text(score, font1, WHITE, Width - 65, 20)
         else:
             self.draw_text(score, font1, WHITE, Width - 45, 20)
+
+    def checkplayercollision(self):
+        if pygame.sprite.groupcollide(playergroup, barriergroup, True, False):
+            pygame.quit()
+            print("oof")
+
+    def checkcoincollision(self):
+        if pygame.sprite.groupcollide(barriergroup, coingroup, False, True):
+            coingroup.empty()
 
 
 
@@ -148,20 +157,34 @@ class player(pygame.sprite.Sprite):
        
 
 
-class platform(pygame.sprite.Sprite):
+class Barrier(pygame.sprite.Sprite):
     # --- Constructor Function ---
-    def __init__(self, width, height, color, posX, posY):
+    def __init__(self, width, height, posX, posY):
         super().__init__()
         pygame.sprite.Sprite.__init__(self)
-
-        # --- Create Platform ---
-        self.image = pygame.Surface([width, height])
-        self.image.fill(color)
-
-        # --- Set Platform Position ---
+        img = pygame.image.load("Project/Images/SpikyStick.png")
+        self.image = pygame.transform.scale(img, (width, height))
         self.rect = self.image.get_rect()
         self.rect.x = posX
         self.rect.y = posY
+
+    def spawn():
+        if len(barriergroup) < 2:
+            barrierx = random.randint(1000,2500)
+            nbarriers = random.randint(3,7)
+            barriergap = random.randint(170, 230)
+            for i in range(1, nbarriers):
+                if i % 2 == 0:
+                    newbarrier = Barrier(75, 200, barrierx + (i * barriergap), -5)
+                    barriergroup.add(newbarrier)
+                else:
+                    newbarrier = Barrier(75, 200, barrierx + (i * barriergap), Height - 195)
+                    barriergroup.add(newbarrier)
+
+    def update(self):
+        self.rect.move_ip(COINSPEED, 0)
+        if self.rect.x < -75:
+            self.kill()
 
 
 
@@ -177,7 +200,7 @@ class Coins(pygame.sprite.Sprite):
         self.rect.y = y
 
     def spawn():
-        while len(coingroup) < MaxCoins:
+        while len(coingroup) == 0:
             coinx = random.randint(1000, 2500)
             coiny = random.randint(40, Height - 100)
             coing = random.randint(5, 17)
@@ -218,13 +241,10 @@ scoreboard = Scoreboard()
 
 bg = Background()
 
-
-allspritegroup.add(myplayer)
-allspritegroup.add(platformgroup)
-allspritegroup.add(coingroup)
 playergroup.add(myplayer)
-
-print(Height - 64)
+allspritegroup.add(playergroup)
+allspritegroup.add(barriergroup)
+allspritegroup.add(coingroup)
 
 # -- Game Loop --
 while not done:
@@ -237,6 +257,7 @@ while not done:
     scroll += 2
 
     Coins.spawn()
+    Barrier.spawn()
 
     # -- Fly --
     keys = pygame.key.get_pressed()
@@ -247,8 +268,9 @@ while not done:
     if myplayer.rect.y <= Height - 62 - 20:
         myplayer.rect.y = myplayer.rect.y + GRAVITY
 
-    scoreboard.ncoins()
-
+    scoreboard.pickupcoins()
+    scoreboard.checkcoincollision()
+    scoreboard.checkplayercollision()
 
     # -- User input and controls
     for event in pygame.event.get():
@@ -264,9 +286,11 @@ while not done:
     # -- Draw here
     playergroup.draw(screen)
     coingroup.draw(screen)
+    barriergroup.draw(screen)
 
     allspritegroup.update()
     coingroup.update()
+    barriergroup.update()
     # -- flip display to reveal new position of objects
     pygame.display.flip()
 
