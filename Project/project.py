@@ -13,6 +13,8 @@ BGSPEED = 1
 FGSPEED = 2.5
 COINSPEED = -5.5
 
+SPEEDMOD = 1
+
 Width = 768
 Height = 432
 
@@ -67,6 +69,47 @@ class Background():
     def get_ground_height(self):
         return self.ground_height
     
+
+class Menu():
+
+    def __init__(self):
+        count = 1
+    
+    def openmenu(self):
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    print("Pause")
+    
+
+
+class Button():
+    def __init__(self, x, y, image):
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+        self.clicked = False
+#        self.image.height = self.image.get_height()
+ #       self.image.width = self.image.get_width()
+
+    def draw(self):
+        action = False
+
+        pos = pygame.mouse.get_pos()
+
+        if self.rect.collidepoint(pos):
+            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+                self.clicked = True
+                action = True
+                print("oaengowjro")
+
+        if pygame.mouse.get_pressed()[0] == 0:
+            self.clicked = False
+
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+
+        return action
+
 
 
 class Scoreboard():
@@ -164,13 +207,15 @@ class Barrier(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         img = pygame.image.load("Project/Images/SpikyStick.png")
         self.image = pygame.transform.scale(img, (width, height))
+    #    self.image = pygame.Surface((width, height))
+    #    self.image.fill(WHITE)
         self.rect = self.image.get_rect()
         self.rect.x = posX
         self.rect.y = posY
 
     def spawn():
         if len(barriergroup) < 2:
-            barrierx = random.randint(1000,2500)
+            barrierx = random.randint(800,1700)
             nbarriers = random.randint(3,7)
             barriergap = random.randint(170, 230)
             for i in range(1, nbarriers):
@@ -182,7 +227,7 @@ class Barrier(pygame.sprite.Sprite):
                     barriergroup.add(newbarrier)
 
     def update(self):
-        self.rect.move_ip(COINSPEED, 0)
+        self.rect.move_ip(COINSPEED * SPEEDMOD, 0)
         if self.rect.x < -75:
             self.kill()
 
@@ -216,17 +261,17 @@ class Coins(pygame.sprite.Sprite):
         self.rect.x -= 1
 
     def update(self):
-        self.rect.move_ip(COINSPEED, 0)
+        self.rect.move_ip(COINSPEED * SPEEDMOD, 0)
         if self.rect.x < -50:
             self.kill()
-        
-
 
 # -- Initialise PyGame --
 pygame.init()
 # -- Blank Screen --
 size = (Width, Height)
 screen = pygame.display.set_mode(size)
+# -- Variables --
+game_paused = False
 # -- Title of new window/screen --
 pygame.display.set_caption("My Window")
 # -- Exit game flag set to false --
@@ -241,6 +286,9 @@ scoreboard = Scoreboard()
 
 bg = Background()
 
+startbutton = Button(53, 153, pygame.image.load('Project/Images/start_btn.png').convert_alpha())
+endbutton = Button(456, 153, pygame.image.load('Project/Images/exit_btn.png').convert_alpha())
+
 playergroup.add(myplayer)
 allspritegroup.add(playergroup)
 allspritegroup.add(barriergroup)
@@ -249,48 +297,74 @@ allspritegroup.add(coingroup)
 # -- Game Loop --
 while not done:
 
-    clock.tick(FPS)
+    if game_paused == True:
 
-    bg.draw_bg()
-    bg.draw_ground()
+        if startbutton.draw() == True:
+            game_paused = False
+        
+        if endbutton.draw() == True:
+            pygame.quit()
 
-    scroll += 2
 
-    Coins.spawn()
-    Barrier.spawn()
+        for event in pygame.event.get():
 
-    # -- Fly --
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_UP]:
-        myplayer.jumpinit(JUMPSPEED)
+            if event.type == pygame.QUIT:
+                done = True
+            
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    print("Pause")
+                    game_paused = False
+    else:
+        clock.tick(FPS)
 
-    # -- Prevent player from falling through the floor --
-    if myplayer.rect.y <= Height - 62 - 20:
-        myplayer.rect.y = myplayer.rect.y + GRAVITY
+        bg.draw_bg()
+        bg.draw_ground()
 
-    scoreboard.pickupcoins()
-    scoreboard.checkcoincollision()
-    scoreboard.checkplayercollision()
+        scroll += 2
+        SPEEDMOD = SPEEDMOD * scoreboard.score / 200 + 1
 
-    # -- User input and controls
-    for event in pygame.event.get():
+        Coins.spawn()
+        Barrier.spawn()
 
-        if event.type == pygame.QUIT:
-            done = True
-        # End If
+        # -- Fly --
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_UP]:
+            myplayer.jumpinit(JUMPSPEED)
 
-    # Next Event
+        # -- Prevent player from falling through the floor --
+        if myplayer.rect.y <= Height - 62 - 20:
+            myplayer.rect.y = myplayer.rect.y + GRAVITY
 
-    #pygame.display.update()
+        # -- User input and controls
+        for event in pygame.event.get():
 
-    # -- Draw here
-    playergroup.draw(screen)
-    coingroup.draw(screen)
-    barriergroup.draw(screen)
+            if event.type == pygame.QUIT:
+                done = True
+            
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    print("Pause")
+                    game_paused = True
+            # End If
 
-    allspritegroup.update()
-    coingroup.update()
-    barriergroup.update()
+        # Next Event
+
+        #pygame.display.update()
+
+        # -- Draw here
+        playergroup.draw(screen)
+        coingroup.draw(screen)
+        barriergroup.draw(screen)
+
+        allspritegroup.update()
+        coingroup.update()
+        barriergroup.update()
+
+        scoreboard.pickupcoins()
+        scoreboard.checkcoincollision()
+        scoreboard.checkplayercollision()
+
     # -- flip display to reveal new position of objects
     pygame.display.flip()
 

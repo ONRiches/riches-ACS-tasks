@@ -129,7 +129,7 @@ while not done:
  #End if
 
  # -- Screen background is BLACK
- screen.fill (BLACK)
+ screen.fill(BLACK)
  # -- Draw here
  
  pygame.draw.rect(screen, BLUE, (x_val,y_val,ball_width,ball_width))
