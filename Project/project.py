@@ -207,8 +207,8 @@ class Barrier(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         img = pygame.image.load("Project/Images/SpikyStick.png")
         self.image = pygame.transform.scale(img, (width, height))
-    #    self.image = pygame.Surface((width, height))
-    #    self.image.fill(WHITE)
+      #  self.image = pygame.Surface((width, height))
+     #   self.image.fill(WHITE)
         self.rect = self.image.get_rect()
         self.rect.x = posX
         self.rect.y = posY
@@ -217,13 +217,14 @@ class Barrier(pygame.sprite.Sprite):
         if len(barriergroup) < 2:
             barrierx = random.randint(800,1700)
             nbarriers = random.randint(3,7)
-            barriergap = random.randint(170, 230)
+            barriergap = random.randint(200,250)
             for i in range(1, nbarriers):
+                barrierheight = random.randint(120,250)
                 if i % 2 == 0:
-                    newbarrier = Barrier(75, 200, barrierx + (i * barriergap), -5)
+                    newbarrier = Barrier(75, barrierheight, barrierx + (i * barriergap), -5)
                     barriergroup.add(newbarrier)
                 else:
-                    newbarrier = Barrier(75, 200, barrierx + (i * barriergap), Height - 195)
+                    newbarrier = Barrier(75, barrierheight, barrierx + (i * barriergap), Height - 195 + (216 - barrierheight))
                     barriergroup.add(newbarrier)
 
     def update(self):
@@ -271,7 +272,7 @@ pygame.init()
 size = (Width, Height)
 screen = pygame.display.set_mode(size)
 # -- Variables --
-game_paused = False
+game_paused = True
 # -- Title of new window/screen --
 pygame.display.set_caption("My Window")
 # -- Exit game flag set to false --
@@ -322,7 +323,7 @@ while not done:
         bg.draw_ground()
 
         scroll += 2
-        SPEEDMOD = SPEEDMOD * scoreboard.score / 200 + 1
+        SPEEDMOD = SPEEDMOD * scoreboard.score / 400 + 1
 
         Coins.spawn()
         Barrier.spawn()
