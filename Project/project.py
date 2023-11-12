@@ -21,6 +21,8 @@ SPEEDMOD = 1
 Width = 768
 Height = 432
 
+LASERY
+
 FPS = 60
 
 scroll = 0
@@ -29,6 +31,7 @@ MaxCoins = 25
 
 font1 = pygame.font.Font('Project/Fonts/04B_30__.TTF', 30)
 font2 = pygame.font.Font('Project/Fonts/04B_30__.TTF', 15)
+font3 = pygame.font.Font('Project/Fonts/04B_30__.TTF', 40)
 
 #sprite_sheet_image = pygame.image.load('Project/Images/BarryFullSpriteSheet.png').convert_alpha()
 #sprite_sheet = spritesheet.Spritesheet(sprite_sheet_image)
@@ -37,15 +40,19 @@ if os.path.exists('Project/highscore.txt'):
     with open('Project/highscore.txt', 'r') as file:
         high_score = file.read()
 else:
-    high_score = 6
+    high_score = 0
+
+original_high_score = high_score
 
 print(high_score)
 
 # -- Sprite Groups --
 
 allspritegroup = pygame.sprite.Group()
+lasergroup = pygame.sprite.Group()
 barriergroup = pygame.sprite.Group()
 coingroup = pygame.sprite.Group()
+warninggroup = pygame.sprite.Group()
 playergroup = pygame.sprite.Group()
 
 # -- Colours --
@@ -53,6 +60,7 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 BLUE = (50, 50, 255)
 YELLOW = (255, 255, 0)
+RED = (225, 0, 0)
 
 # -- Classes
 
@@ -101,14 +109,20 @@ class Menu():
 
     def checkplay(self):
         self.deathscreen()
-        startbutton = Button(53, 153, pygame.image.load('Project/Images/start_btn.png').convert_alpha())
-        endbutton = Button(456, 153, pygame.image.load('Project/Images/exit_btn.png').convert_alpha())
-        startbutton.draw()
-        endbutton.draw()
+      #  startbutton = Button(53, 153, pygame.image.load('Project/Images/start_btn.png').convert_alpha())
+       # endbutton = Button(456, 153, pygame.image.load('Project/Images/exit_btn.png').convert_alpha())
+        #startbutton.draw()
+        #endbutton.draw()
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     print('hahaha')
+                    pygame.QUIT()
+
+    def start(self):
+        myplayer = player()
+        playergroup.add(myplayer)
+        allspritegroup.add(playergroup)
         
     
 
@@ -150,39 +164,62 @@ class Scoreboard():
         img = font.render(text, True, text_col)
         screen.blit(img, (x, y))
 
-    def pickupcoins(self):
-        self.draw_text("score:", font2, WHITE, Width - 65, 5)
-        if pygame.sprite.spritecollide(myplayer, coingroup, True):
-            self.score += 1
-        score = str(self.score)
-        if self.score > 99:
-            self.draw_text(score, font1, WHITE, Width - 85, 20)
-        elif self.score > 9:
-            self.draw_text(score, font1, WHITE, Width - 65, 20)
+    def pickupcoins(self, option):
+        if option == 1:
+            self.draw_text("score:", font2, WHITE, Width - 65, 5)
+            if pygame.sprite.spritecollide(myplayer, coingroup, True):
+                self.score += 1
+            score = str(self.score)
+            if self.score > 99:
+                self.draw_text(score, font1, WHITE, Width - 85, 20)
+            elif self.score > 9:
+                self.draw_text(score, font1, WHITE, Width - 65, 20)
+            else:
+                self.draw_text(score, font1, WHITE, Width - 45, 20)
         else:
-            self.draw_text(score, font1, WHITE, Width - 45, 20)
+            self.draw_text("score:", font1, WHITE, 285, 90)
+            score = str(self.score)
+            self.draw_text(score, font3, WHITE, 435, 85)      
 
     def getscore(self):
         return self.score
 
     def checkplayercollision(self):
-        if pygame.sprite.groupcollide(playergroup, barriergroup, True, False, pygame.sprite.collide_mask):
+        if pygame.sprite.groupcollide(playergroup, barriergroup, False, True, pygame.sprite.collide_mask) or pygame.sprite.groupcollide(playergroup, lasergroup, False, True, pygame.sprite.collide_rect):
             return True
+        
     
     def checkcoincollision(self):
         if pygame.sprite.groupcollide(barriergroup, coingroup, False, True):
             coingroup.empty()
 
     def draw_high_score(self, text, font, text_col, x, y):
-        self.draw_text("highscore:", font2, WHITE, 0, 5)
         img = font.render(text, True, text_col)
         screen.blit(img, (x, y))
 
     def checkscore(self, score, highscore):
-        if int(score) > int(highscore):
+        if int(score) > int(original_high_score):
             highscore = score
             with open('Project/highscore.txt', 'w') as file:
                 file.write(str(highscore))
+
+    def drawhighscoretxt(self, option):
+        if option == 1:
+            self.draw_text("highscore:", font2, WHITE, 0, 2)
+        else:
+            self.draw_text("highscore:", font1, WHITE, 240, 305)
+
+    def checknewscore(self, score, option):
+        if option == 1:
+            if int(score) > int(original_high_score):
+                self.draw_text("new highscore!", font3, WHITE, 180, 20)
+        else:
+            if int(score) > int(original_high_score):
+                self.draw_text("new highscore!", font3, WHITE, 180, 350)
+
+    def setscore(self, score):
+        self.score = score
+
 
 
 class player(pygame.sprite.Sprite):
@@ -243,9 +280,6 @@ class Barrier(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
         self.mask_image = self.mask.to_surface()
-      #  self.image = pygame.Surface((width, height))
-     #   self.image.fill(WHITE)
-        self.rect = self.image.get_rect()
         self.rect.x = posX
         self.rect.y = posY
 
@@ -267,8 +301,58 @@ class Barrier(pygame.sprite.Sprite):
         self.rect.move_ip(COINSPEED * SPEEDMOD, 0)
         if self.rect.x < -75:
             self.kill()
-        
 
+
+
+class Laser(pygame.sprite.Sprite):
+    def __init__(self, length, x, y):
+        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
+        self.laserlength = length
+        self.image = pygame.Surface((self.laserlength, 3))
+        self.image.fill(RED)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+    def spawn():
+        if len(lasergroup) == 0:
+            laserlength = random.randint(150, 450)
+            laserx = random.randint(800, 1700)
+            lasery = random.randint(30, Height - 30)
+            newlaser = Laser(laserlength, laserx, lasery)
+            lasergroup.add(newlaser)
+
+    def update(self):
+        self.rect.move_ip(COINSPEED * SPEEDMOD - 10, 0)
+        if self.rect.x + self.laserlength < -50:
+            self.kill()
+    
+    def gety(self):
+        return self.rect.y
+
+
+
+class Warning(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((50, 50))
+        self.image.fill(RED)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+    def spawn(y):
+        Warning1 = Warning(1, y)
+        warninggroup.add(Warning1)
+        Warning2 = Warning(Width - 1, y)
+        warninggroup.add(Warning1)
+
+    def update(self):
+        if len(lasergroup) == 0:
+            self.kill()
+    
 
 
 class Coins(pygame.sprite.Sprite):
@@ -311,6 +395,7 @@ screen = pygame.display.set_mode(size)
 # -- Variables --
 game_paused = True
 death = False
+died = False
 # -- Title of new window/screen --
 pygame.display.set_caption("My Window")
 # -- Exit game flag set to false --
@@ -333,14 +418,30 @@ playergroup.add(myplayer)
 allspritegroup.add(playergroup)
 allspritegroup.add(barriergroup)
 allspritegroup.add(coingroup)
+allspritegroup.add(lasergroup)
 
 # -- Game Loop --
 while not done:
 
     if death == True:
         menu.checkplay()
-        scoreboard.draw_high_score(high_score, font1, WHITE, 45, 20)
-        scoreboard.checkscore(scoreboard.getscore(), high_score)
+        scoreboard.draw_high_score(high_score, font3, WHITE, 485, 300)
+        scoreboard.drawhighscoretxt(2)
+        scoreboard.checknewscore(scoreboard.getscore(), 2)
+       # scoreboard.checkscore(scoreboard.getscore(), high_score)
+        scoreboard.pickupcoins(2)
+
+        if startbutton.draw() == True:
+            scoreboard.setscore(0)
+            scoreboard.pickupcoins(2)
+            death = False
+            barriergroup.empty()
+            coingroup.empty()
+            lasergroup.empty()
+
+        if endbutton.draw() == True:
+            pygame.QUIT()
+
         allspritegroup.update
         for event in pygame.event.get():
 
@@ -378,6 +479,8 @@ while not done:
 
         Coins.spawn()
         Barrier.spawn()
+        Laser.spawn()
+        Warning.spawn()
 
         # -- Fly --
         keys = pygame.key.get_pressed()
@@ -408,18 +511,30 @@ while not done:
         playergroup.draw(screen)
         coingroup.draw(screen)
         barriergroup.draw(screen)
+        lasergroup.draw(screen)
+        warninggroup.draw(screen)
 
         allspritegroup.update()
         coingroup.update()
         barriergroup.update()
+        lasergroup.update()
+        warninggroup.update()
 
-        scoreboard.pickupcoins()
+        scoreboard.pickupcoins(1)
         scoreboard.checkcoincollision()
+        scoreboard.drawhighscoretxt(1)
+        scoreboard.checknewscore(scoreboard.getscore(), 1)
+
         if scoreboard.checkplayercollision() == True:
             death = True
 
+
         scoreboard.draw_high_score(high_score, font1, WHITE, 45, 20)
         scoreboard.checkscore(scoreboard.getscore(), high_score)
+        
+        if int(scoreboard.getscore()) > int(high_score):
+            high_score = scoreboard.getscore()
+            high_score = str(high_score)
 
     # -- flip display to reveal new position of objects
     pygame.display.flip()
