@@ -21,8 +21,6 @@ SPEEDMOD = 1
 Width = 768
 Height = 432
 
-LASERY
-
 FPS = 60
 
 scroll = 0
@@ -32,6 +30,7 @@ MaxCoins = 25
 font1 = pygame.font.Font('Project/Fonts/04B_30__.TTF', 30)
 font2 = pygame.font.Font('Project/Fonts/04B_30__.TTF', 15)
 font3 = pygame.font.Font('Project/Fonts/04B_30__.TTF', 40)
+font4 = pygame.font.Font('Project/Fonts/04B_30__.TTF', 22)
 
 #sprite_sheet_image = pygame.image.load('Project/Images/BarryFullSpriteSheet.png').convert_alpha()
 #sprite_sheet = spritesheet.Spritesheet(sprite_sheet_image)
@@ -322,6 +321,7 @@ class Laser(pygame.sprite.Sprite):
             lasery = random.randint(30, Height - 30)
             newlaser = Laser(laserlength, laserx, lasery)
             lasergroup.add(newlaser)
+            Warning.spawn(lasery)
 
     def update(self):
         self.rect.move_ip(COINSPEED * SPEEDMOD - 10, 0)
@@ -337,19 +337,21 @@ class Warning(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((50, 50))
+        self.img = font4.render("!", True, BLACK)
+        self.image = pygame.Surface((25, 25))
         self.image.fill(RED)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
 
-    def spawn(y):
-        Warning1 = Warning(1, y)
+    def spawn(temp):
+        Warning1 = Warning(1, temp - 11)
         warninggroup.add(Warning1)
-        Warning2 = Warning(Width - 1, y)
-        warninggroup.add(Warning1)
+        Warning2 = Warning(Width - 26, temp - 11)
+        warninggroup.add(Warning2)
 
     def update(self):
+        screen.blit(self.img, (self.rect.x + 8, self.rect.y + 1))
         if len(lasergroup) == 0:
             self.kill()
     
@@ -438,6 +440,7 @@ while not done:
             barriergroup.empty()
             coingroup.empty()
             lasergroup.empty()
+            warninggroup.empty()
 
         if endbutton.draw() == True:
             pygame.QUIT()
@@ -480,7 +483,6 @@ while not done:
         Coins.spawn()
         Barrier.spawn()
         Laser.spawn()
-        Warning.spawn()
 
         # -- Fly --
         keys = pygame.key.get_pressed()
