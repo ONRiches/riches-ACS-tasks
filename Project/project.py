@@ -12,21 +12,22 @@ pygame.display.init()
 GRAVITY = 4
 JUMPSPEED = -10
 
+# --- Speed Modifiers ---
 BGSPEED = 1
 FGSPEED = 2.5
 COINSPEED = -5.5
-
 SPEEDMOD = 1
+scroll = 0
 
+# --- Screen dimensions ---
 Width = 768
 Height = 432
 
+# --- Misc Constants ---
 FPS = 60
-
-scroll = 0
-
 MaxCoins = 25
 
+# --- Fonts ---
 font1 = pygame.font.Font('Project/Fonts/04B_30__.TTF', 30)
 font2 = pygame.font.Font('Project/Fonts/04B_30__.TTF', 15)
 font3 = pygame.font.Font('Project/Fonts/04B_30__.TTF', 40)
@@ -35,15 +36,15 @@ font4 = pygame.font.Font('Project/Fonts/04B_30__.TTF', 22)
 #sprite_sheet_image = pygame.image.load('Project/Images/BarryFullSpriteSheet.png').convert_alpha()
 #sprite_sheet = spritesheet.Spritesheet(sprite_sheet_image)
 
+# --- Load the highscore ---
 if os.path.exists('Project/highscore.txt'):
     with open('Project/highscore.txt', 'r') as file:
         high_score = file.read()
 else:
     high_score = 0
 
+# --- Set a new highscore variable that can be changed whilst keeping the original score ---
 original_high_score = high_score
-
-print(high_score)
 
 # -- Sprite Groups --
 
@@ -53,6 +54,7 @@ barriergroup = pygame.sprite.Group()
 coingroup = pygame.sprite.Group()
 warninggroup = pygame.sprite.Group()
 playergroup = pygame.sprite.Group()
+firegroup = pygame.sprite.Group()
 
 # -- Colours --
 BLACK = (0, 0, 0)
@@ -61,10 +63,11 @@ BLUE = (50, 50, 255)
 YELLOW = (255, 255, 0)
 RED = (225, 0, 0)
 
-# -- Classes
+# -- Classes ---
 
 class Background():
 
+    # --- Constructor ---
     def __init__(self):
         self.ground_image = pygame.image.load("Project/Images/ground.png").convert_alpha()
         self.ground_width = self.ground_image.get_width()
@@ -72,18 +75,22 @@ class Background():
 
         self.bg_images = []
         for i in range(1, 6):
+            # --- Load each of the 6 background images ---
             self.bg_image = pygame.image.load(f"Project/Images/plx-{i}.png").convert_alpha()
             self.bg_images.append(self.bg_image)
         self.bg_width = self.bg_images[0].get_width()
 
-
+    # --- Draw the moving background --- 
     def draw_bg(self):
         for x in range(1000):
+            # --- Set the speed of the background ---
             speed = BGSPEED
             for i in self.bg_images:
+                # --- Move the background images at different speeds ---
                 screen.blit(i, ((x * self.bg_width) - scroll * speed, 0))
                 speed += 0.2
 
+    # --- Draw the ground ---
     def draw_ground(self):
         for x in range(1000):
             screen.blit(self.ground_image, ((x * self.ground_width) - scroll * FGSPEED, Height - self.ground_height))
@@ -97,27 +104,27 @@ class Menu():
     def __init__(self):
         count = 1
     
+    # --- Pause function ---
     def openmenu(self):
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     print("Pause")
 
+    # --- Cover the background if dead ---
     def deathscreen(self):
         screen.fill(BLACK)
 
+    # --- Quit from death screen ---
     def checkplay(self):
         self.deathscreen()
-      #  startbutton = Button(53, 153, pygame.image.load('Project/Images/start_btn.png').convert_alpha())
-       # endbutton = Button(456, 153, pygame.image.load('Project/Images/exit_btn.png').convert_alpha())
-        #startbutton.draw()
-        #endbutton.draw()
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     print('hahaha')
                     pygame.QUIT()
 
+    # --- Start function ---
     def start(self):
         myplayer = player()
         playergroup.add(myplayer)
@@ -127,27 +134,32 @@ class Menu():
 
 
 class Button():
+
+    # --- Constructor ---
     def __init__(self, x, y, image):
         self.image = image
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
         self.clicked = False
-#        self.image.height = self.image.get_height()
- #       self.image.width = self.image.get_width()
 
+    # --- Draw the buttons for menus ---
     def draw(self):
         action = False
 
         pos = pygame.mouse.get_pos()
 
+        # --- Check for button clicks ---
         if self.rect.collidepoint(pos):
+            # --- Make sure the button can only be pressed once ---
             if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                 self.clicked = True
                 action = True
 
+        # --- Reset the button ---
         if pygame.mouse.get_pressed()[0] == 0:
             self.clicked = False
 
+        # --- Draw the button ---
         screen.blit(self.image, (self.rect.x, self.rect.y))
 
         return action
@@ -159,6 +171,7 @@ class Scoreboard():
     def __init__(self):
         self.score = 0
 
+    # --- Function for drawing necessary text ---
     def draw_text(self, text, font, text_col, x, y):
         img = font.render(text, True, text_col)
         screen.blit(img, (x, y))
@@ -186,7 +199,6 @@ class Scoreboard():
     def checkplayercollision(self):
         if pygame.sprite.groupcollide(playergroup, barriergroup, False, True, pygame.sprite.collide_mask) or pygame.sprite.groupcollide(playergroup, lasergroup, False, True, pygame.sprite.collide_rect):
             return True
-        
     
     def checkcoincollision(self):
         if pygame.sprite.groupcollide(barriergroup, coingroup, False, True):
@@ -222,25 +234,48 @@ class Scoreboard():
 
 
 class player(pygame.sprite.Sprite):
+
     # --- Constructor Function ---
     def __init__(self):
         super().__init__()
         pygame.sprite.Sprite.__init__(self)
 
         # --- Create Player ---
-        self.image = pygame.Surface((10, 20))
-        self.image.fill(WHITE)
+      #  self.image = pygame.Surface((10, 20))
+       # self.image.fill(WHITE)
+
+
+        self.image1 = pygame.image.load("Project/Images/BarryRunning.png").convert_alpha()
+        self.image = self.get_image(self.image1, 280, 288, 0)
+        #self.animation_list = []
+        #animation_count = 4
+        #self.animation_cooldown = 300
+        #self.frame = 0
+        #for x in range(animation_count):
+        #    self.animation_list.append(self.get_image(self.image1, 280, 288, x))
+        #self.current_time = pygame.time.get_ticks()
+
+
 
         # --- Set Player Position ---
         self.rect = self.image.get_rect()
         self.rect.x = Width / 3
         self.rect.y = Height - 60 - 20
 
-    #    self.frame0 = sprite_sheet.get_image()
-     #   self.frame1 = sprite_sheet.get_image()
-      #  self.frame3 = sprite_sheet.get_image()
-
     # --- Functions ---
+
+    def get_image(self, sheet, width, height, frame):
+        image = pygame.Surface((width, height)).convert_alpha()
+        image.blit(sheet, (0,0), (frame * width, 0, width, height))
+        image = pygame.transform.scale(image, (50,50))
+        image.set_colorkey(BLACK)
+        return image
+    
+    #def draw(self):
+        #if self.current_time % self.animation_cooldown == 0:
+        #    self.frame += 1
+
+       # self.image = self.animation_list[self.frame]
 
     def get_x(self):
         return self.rect.x
@@ -267,7 +302,24 @@ class player(pygame.sprite.Sprite):
         if self.rect.y > 0:
             self.rect.y += vertSpeed
         
-       
+
+
+class Fire(pygame.sprite.Sprite):
+
+    def __init__(self, x, y):
+            super().__init__()
+            pygame.sprite.Sprite.__init__(self)
+            image = pygame.image.load("Project/Images/Pixel Flame Spritesheet.png")
+            self.image = pygame.transform.scale(image, (35, 35))
+            self.rect = self.image.get_rect()
+            self.rect.x = x
+            self.rect.y = y
+
+    def fly(self, x, y):
+            myfire = Fire(x, y)
+            firegroup.add(myfire)
+
+
 
 class Barrier(pygame.sprite.Sprite):
     # --- Constructor Function ---
@@ -389,6 +441,8 @@ class Coins(pygame.sprite.Sprite):
         if self.rect.x < -50:
             self.kill()
 
+
+
 # -- Initialise PyGame --
 pygame.init()
 # -- Blank Screen --
@@ -421,6 +475,7 @@ allspritegroup.add(playergroup)
 allspritegroup.add(barriergroup)
 allspritegroup.add(coingroup)
 allspritegroup.add(lasergroup)
+allspritegroup.add(firegroup)
 
 # -- Game Loop --
 while not done:
@@ -430,7 +485,6 @@ while not done:
         scoreboard.draw_high_score(high_score, font3, WHITE, 485, 300)
         scoreboard.drawhighscoretxt(2)
         scoreboard.checknewscore(scoreboard.getscore(), 2)
-       # scoreboard.checkscore(scoreboard.getscore(), high_score)
         scoreboard.pickupcoins(2)
 
         if startbutton.draw() == True:
@@ -441,6 +495,7 @@ while not done:
             coingroup.empty()
             lasergroup.empty()
             warninggroup.empty()
+            firegroup.empty()
 
         if endbutton.draw() == True:
             pygame.QUIT()
@@ -488,6 +543,12 @@ while not done:
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP]:
             myplayer.jump(JUMPSPEED)
+            Fire.fly(0,myplayer.get_x(),myplayer.get_y() + 50)
+        else:
+            firegroup.empty()
+
+        if len(firegroup) > 1:
+            firegroup.empty()
 
         # -- Prevent player from falling through the floor --
         if myplayer.rect.y <= Height - 62 - 20:
@@ -515,12 +576,14 @@ while not done:
         barriergroup.draw(screen)
         lasergroup.draw(screen)
         warninggroup.draw(screen)
+        firegroup.draw(screen)
 
         allspritegroup.update()
         coingroup.update()
         barriergroup.update()
         lasergroup.update()
         warninggroup.update()
+        firegroup.update()
 
         scoreboard.pickupcoins(1)
         scoreboard.checkcoincollision()
