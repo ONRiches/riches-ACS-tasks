@@ -179,7 +179,7 @@ class Scoreboard():
     def pickupcoins(self, option):
         if option == 1:
             self.draw_text("score:", font2, WHITE, Width - 65, 5)
-            if pygame.sprite.spritecollide(myplayer, coingroup, True):
+            if pygame.sprite.spritecollide(myplayer, coingroup, True, pygame.sprite.collide_mask):
                 self.score += 1
             score = str(self.score)
             if self.score > 99:
@@ -197,11 +197,11 @@ class Scoreboard():
         return self.score
 
     def checkplayercollision(self):
-        if pygame.sprite.groupcollide(playergroup, barriergroup, False, True, pygame.sprite.collide_mask) or pygame.sprite.groupcollide(playergroup, lasergroup, False, True, pygame.sprite.collide_rect):
+        if pygame.sprite.groupcollide(playergroup, barriergroup, False, True, pygame.sprite.collide_mask) or pygame.sprite.groupcollide(playergroup, lasergroup, False, True, pygame.sprite.collide_mask):
             return True
     
     def checkcoincollision(self):
-        if pygame.sprite.groupcollide(barriergroup, coingroup, False, True):
+        if pygame.sprite.groupcollide(barriergroup, coingroup, False, True, pygame.sprite.collide_mask):
             coingroup.empty()
 
     def draw_high_score(self, text, font, text_col, x, y):
@@ -247,6 +247,8 @@ class player(pygame.sprite.Sprite):
 
         self.image1 = pygame.image.load("Project/Images/BarryRunning.png").convert_alpha()
         self.image = self.get_image(self.image1, 280, 288, 0)
+        self.mask = pygame.mask.from_surface(self.image)
+        self.mask_image = self.mask.to_surface()
         #self.animation_list = []
         #animation_count = 4
         #self.animation_cooldown = 300
