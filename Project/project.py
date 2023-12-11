@@ -122,7 +122,6 @@ class Background():
         # Draw the ground so many times that it will never reach the end
         for x in range(1000):
             screen.blit(self.ground_image, ((x * self.ground_width) - scroll * FGSPEED, Height - self.ground_height))
-
         # Next x
 
     # --- Get the height of the ground image ---
