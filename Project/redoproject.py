@@ -36,7 +36,7 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 
         # Set the player as a placholder rectangle
-        self.image = pygame.Surface((20, 50))
+        self.image = pygame.Surface((10,20))
         self.image.fill(WHITE)
 
         # Set Player Position
@@ -119,14 +119,14 @@ while not done:
         myplayer.rect.y = myplayer.rect.y + GRAVITY
     # End if
 
+    # Draw Background
+    screen.fill(BLACK)
+
     # Draw the objects on the screen
     allspritegroup.draw(screen)
 
     # Update all objects
     allspritegroup.update()
-
-    # Draw Background
-    screen.fill(BLACK)
 
     # Flip display to reveal new position of objects
     pygame.display.flip()
