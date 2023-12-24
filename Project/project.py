@@ -1,6 +1,5 @@
 from typing import Any
 import pygame
-import math
 import random
 import os
 vec = pygame.math.Vector2
@@ -20,7 +19,7 @@ COINSPEED = -5.5
 SPEEDMOD = 1
 scroll = 0
 
-# --- Screen dimensions ---
+# --- Screen Dimensions ---
 
 Width = 768
 Height = 432
@@ -54,7 +53,7 @@ else:
 # Set a new highscore variable that can be changed whilst keeping the original score
 original_high_score = high_score
 
-# -- Sprite Groups --
+# --- Sprite Groups ---
 
 allspritegroup = pygame.sprite.Group()
 lasergroup = pygame.sprite.Group()
@@ -64,14 +63,15 @@ warninggroup = pygame.sprite.Group()
 playergroup = pygame.sprite.Group()
 firegroup = pygame.sprite.Group()
 
-# -- Colours --
+# --- Colours ---
+
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 BLUE = (50, 50, 255)
 YELLOW = (255, 255, 0)
 RED = (225, 0, 0)
 
-# -- Classes ---
+# --- Classes ---
 
 class Background():
 
@@ -182,7 +182,7 @@ class Menu():
     def start(self):
 
         # Create a player
-        myplayer = player()
+        myplayer = Player()
 
         # Add player to sprite groups
         playergroup.add(myplayer)
@@ -382,7 +382,7 @@ class Scoreboard():
 
 
 
-class player(pygame.sprite.Sprite):
+class Player(pygame.sprite.Sprite):
 
     # --- Constructor Function ---
     def __init__(self):
@@ -423,7 +423,7 @@ class player(pygame.sprite.Sprite):
         image.set_colorkey(BLACK)
         return image
 
-    # -- x value getter ---
+    # --- x value getter ---
     def get_x(self):
         return self.rect.x
 
@@ -735,7 +735,7 @@ class Coins(pygame.sprite.Sprite):
 
 
 
-# --- Initialise PyGame ---
+# --- Initialise Pygame ---
 
 pygame.init()
 
@@ -758,15 +758,15 @@ pygame.display.set_caption("My Window")
 
 done = False
 
-# --- Manages how fast screen refreshes ---
+# --- Manage how fast screen refreshes ---
 
 clock = pygame.time.Clock()
 
-# --- Instanciation of necessary classes
+# --- Instantiation of necessary classes
 
 menu = Menu()
 
-myplayer = player()
+myplayer = Player()
 
 scoreboard = Scoreboard()
 
@@ -782,13 +782,14 @@ endbutton = Button(456, 153, pygame.image.load('Project/Images/exit_btn.png').co
 playergroup.add(myplayer)
 
 # --- Add all the sprite groups to one common group ---
+
 allspritegroup.add(playergroup)
 allspritegroup.add(barriergroup)
 allspritegroup.add(coingroup)
 allspritegroup.add(lasergroup)
 allspritegroup.add(firegroup)
 
-# -- Game Loop --
+# --- Game Loop ---
 
 while not done:
 
@@ -967,7 +968,7 @@ while not done:
 
     # End if
 
-    # -- flip display to reveal new position of objects
+    # Flip display to reveal new position of objects
     pygame.display.flip()
 
 # End While - End of game loop
