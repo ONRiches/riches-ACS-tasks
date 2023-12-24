@@ -6,6 +6,9 @@ from typing import Any
 FPS = 60
 GRAVITY = 5
 JUMPSPEED = -10
+scroll = 0
+BGSPEED = 1
+FGSPEED = 2.5
 
 # --- Screen Dimensions ---
 
@@ -26,6 +29,62 @@ allspritegroup = pygame.sprite.Group()
 playergroup = pygame.sprite.Group()
 
 # --- Classes ---
+
+class Background():
+
+    # --- Constructor ---
+    def __init__(self):
+
+        # Load the image of the ground
+        self.ground_image = pygame.image.load("Project/Images/ground.png").convert_alpha()
+        self.ground_width = self.ground_image.get_width()
+        self.ground_height = self.ground_image.get_height()
+
+        # Create a list to hold the 6 background images
+        self.bg_images = []
+
+        for i in range(1, 6):
+            # Load each of the 6 background images
+            self.bg_image = pygame.image.load(f"Project/Images/plx-{i}.png").convert_alpha()
+            # Add them to the list
+            self.bg_images.append(self.bg_image)
+        # Next i
+
+        # Find the width of one of the background images  
+        self.bg_width = self.bg_images[0].get_width()
+
+    # --- Functions ---
+
+    # --- Draw the moving background --- 
+    def draw_bg(self):
+
+        # Draw the background so many times it will never reach the end
+        for x in range(1000):
+
+            # Set the speed of the background
+            speed = BGSPEED
+
+            # Iterate between the images in the list
+            for i in self.bg_images:
+
+                # Move the background images at different speeds
+                screen.blit(i, ((x * self.bg_width) - scroll * speed, 0))
+                speed += 0.2
+
+            # Next i
+
+    # --- Draw the ground ---
+    def draw_ground(self):
+        # Draw the ground so many times that it will never reach the end
+        for x in range(1000):
+            screen.blit(self.ground_image, ((x * self.ground_width) - scroll * FGSPEED, Height - self.ground_height))
+        # Next x
+
+    # --- Get the height of the ground image ---
+    def get_ground_height(self):
+        return self.ground_height
+
+
 
 class Player(pygame.sprite.Sprite):
 
@@ -88,6 +147,8 @@ clock = pygame.time.Clock()
 
 myplayer = Player()
 
+bg = Background()
+
 # --- Add new objects to sprite groups ---
 
 playergroup.add(myplayer)
@@ -120,7 +181,13 @@ while not done:
     # End if
 
     # Draw Background
-    screen.fill(BLACK)
+    bg.draw_bg()
+
+    # Draw the ground
+    bg.draw_ground()
+
+    # Set the necessary speeds of background and objects
+    scroll += 2
 
     # Draw the objects on the screen
     allspritegroup.draw(screen)

@@ -91,7 +91,6 @@ class Background():
             self.bg_image = pygame.image.load(f"Project/Images/plx-{i}.png").convert_alpha()
             # Add them to the list
             self.bg_images.append(self.bg_image)
-
         # Next i
 
         # Find the width of one of the background images  
