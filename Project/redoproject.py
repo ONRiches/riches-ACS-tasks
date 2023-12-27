@@ -6,9 +6,14 @@ from typing import Any
 FPS = 60
 GRAVITY = 5
 JUMPSPEED = -10
+
+# --- Speed Modifiers ---
+
 scroll = 0
 BGSPEED = 1
 FGSPEED = 2.5
+COINSPEED = -5.5
+SPEEDMOD = 1
 
 # --- Screen Dimensions ---
 
@@ -27,6 +32,7 @@ RED = (225, 0, 0)
 
 allspritegroup = pygame.sprite.Group()
 playergroup = pygame.sprite.Group()
+coingroup = pygame.sprite.Group()
 
 # --- Classes ---
 
@@ -122,6 +128,79 @@ class Player(pygame.sprite.Sprite):
         # End if
 
 
+
+class Coins(pygame.sprite.Sprite):
+
+    # --- Constructor ---
+    def __init__(self, x, y):
+
+        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
+
+        # Load the image for the coin sprite
+        img = pygame.image.load("Project/Images/coin.png")
+
+        # Scale the image down
+        self.image = pygame.transform.scale(img, (15,15))
+
+        # Get the position of the centre of the sprite
+        self.rect = self.image.get_rect()
+        self.rect.center = (x,y)
+        self.rect.x = x
+        self.rect.y = y
+
+    # --- Functions ---
+
+    # --- Spawn coin clusters ---
+    def spawn():
+
+        # Spawn new coins if there are currently none
+        if len(coingroup) == 0:
+
+            # Random x coordinate for the first coin in the cluster
+            coinx = random.randint(1000, 2500)
+
+            # Random y coorindate for the first coin in the cluster
+            coiny = random.randint(40, Height - 100)
+
+            # Random number of coins in the top row of the cluster
+            coing = random.randint(5, 17)
+
+            # Spawn the top row of the cluster
+            for i in range(0, coing):
+
+                # Instantiate new coins, with each 20 pixels from each other
+                newcoin = Coins(coinx + i * 20, coiny)
+
+                # Add each new object to the sprite group
+                coingroup.add(newcoin)
+
+            # Next i
+
+            # Spawn the bottom row of the cluster 20 pixel below the top row
+            for j in range(0, 25 - coing):
+
+                # Instantiate new coins, with each 20 pixels from each other
+                newcoin = Coins(coinx + (j * 20) - 60, coiny + 20)
+
+                # Add each new object to the sprite group
+                coingroup.add(newcoin)
+
+            # Next i
+        # End if
+
+    # --- Update ---
+    def update(self):
+
+        # Move coins to the left
+        self.rect.move_ip(COINSPEED * SPEEDMOD, 0)
+
+        # Kill coins once off the screen so that more can be spawned
+        if self.rect.x < -50:
+            self.kill()
+        # End if
+
+
 # --- Initialise Pygame ---
 
 pygame.init()
@@ -156,6 +235,7 @@ playergroup.add(myplayer)
 # --- Add all the sprite groups to one common group ---
 
 allspritegroup.add(playergroup)
+allspritegroup.add(coingroup)
 
 
 # --- Game Loop ---
@@ -180,6 +260,9 @@ while not done:
         myplayer.rect.y = myplayer.rect.y + GRAVITY
     # End if
 
+    # Spawn obstacles and coins
+    Coins.spawn()
+
     # Draw Background
     bg.draw_bg()
 
@@ -190,10 +273,12 @@ while not done:
     scroll += 2
 
     # Draw the objects on the screen
-    allspritegroup.draw(screen)
+    playergroup.draw(screen)
+    coingroup.draw(screen)
 
     # Update all objects
     allspritegroup.update()
+    coingroup.update()
 
     # Flip display to reveal new position of objects
     pygame.display.flip()

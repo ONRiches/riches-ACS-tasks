@@ -308,7 +308,7 @@ class Scoreboard():
             return True
         # End if
     
-    # --- Check if the player collides with a coin and delete coins if true ---
+    # --- Check if a barrier collides with a coin and delete coins if true ---
     def checkcoincollision(self):
         if pygame.sprite.groupcollide(barriergroup, coingroup, False, True, pygame.sprite.collide_mask):
 
@@ -717,10 +717,6 @@ class Coins(pygame.sprite.Sprite):
             # Next i
         # End if
 
-    # --- Move coins to the left ---
-    def movecoins(self):
-        self.rect.x -= 1
-
     # --- Update ---
     def update(self):
 
@@ -966,7 +962,7 @@ while not done:
         # End if
 
     # End if
-
+    
     # Flip display to reveal new position of objects
     pygame.display.flip()
 
