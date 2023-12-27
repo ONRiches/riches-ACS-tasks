@@ -12,19 +12,19 @@ Height = 432
 screen = pygame.display.set_mode((Width, Height))
 pygame.display.set_caption("Endless Scroll")
 
-bg1 = pygame.image.load("Project/plx-1.png").convert()
+bg1 = pygame.image.load("Project/Images/plx-1.png").convert_alpha()
 bg1_width = bg1.get_width()
 
-bg2 = pygame.image.load("Project/plx-2.png").convert()
+bg2 = pygame.image.load("Project/Images/plx-2.png").convert_alpha()
 bg2_width = bg2.get_width()
 
-bg3 = pygame.image.load("Project/plx-3.png").convert()
+bg3 = pygame.image.load("Project/Images/plx-3.png").convert_alpha()
 bg3_width = bg3.get_width()
 
-bg4 = pygame.image.load("Project/plx-4.png").convert()
+bg4 = pygame.image.load("Project/Images/plx-4.png").convert_alpha()
 bg4_width = bg4.get_width()
 
-bg5 = pygame.image.load("Project/plx-5.png").convert()
+bg5 = pygame.image.load("Project/Images/plx-5.png").convert_alpha()
 bg5_width = bg5.get_width()
 
 

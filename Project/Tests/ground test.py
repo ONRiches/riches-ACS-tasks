@@ -14,11 +14,11 @@ pygame.display.set_caption("Endless Scroll")
 
 bg_images = []
 for i in range(1, 6):
-    bg_image = pygame.image.load(f"Project/plx-{i}.png").convert_alpha()
+    bg_image = pygame.image.load(f"Project/Images/plx-{i}.png").convert_alpha()
     bg_images.append(bg_image)
 bg_width = bg_images[0].get_width()
 
-ground = pygame.image.load("Project/ground.png").convert()
+ground = pygame.image.load("Project/Images/ground.png").convert()
 ground_width = ground.get_width()
 ground_height = ground.get_height()
 

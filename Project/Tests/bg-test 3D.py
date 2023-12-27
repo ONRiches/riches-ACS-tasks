@@ -17,13 +17,13 @@ scroll = 0
 class Background():
 
     def __init__(self):
-        self.ground_image = pygame.image.load("Project/ground.png").convert()
+        self.ground_image = pygame.image.load("Project/Images/ground.png").convert()
         self.ground_width = self.ground_image.get_width()
         self.ground_height = self.ground_image.get_height()
 
         self.bg_images = []
         for i in range(1, 6):
-            self.bg_image = pygame.image.load(f"Project/plx-{i}.png").convert_alpha()
+            self.bg_image = pygame.image.load(f"Project/Images/plx-{i}.png").convert_alpha()
             self.bg_images.append(self.bg_image)
         self.bg_width = self.bg_images[0].get_width()
 
