@@ -2,7 +2,6 @@ import pygame
 import random
 import os
 from typing import Any
-pygame.font.init()
 
 FPS = 60
 GRAVITY = 5
@@ -34,30 +33,6 @@ RED = (225, 0, 0)
 allspritegroup = pygame.sprite.Group()
 playergroup = pygame.sprite.Group()
 coingroup = pygame.sprite.Group()
-
-# --- Fonts ---
-
-font1 = pygame.font.Font('Project/Fonts/04B_30__.TTF', 30)
-font2 = pygame.font.Font('Project/Fonts/04B_30__.TTF', 15)
-font3 = pygame.font.Font('Project/Fonts/04B_30__.TTF', 40)
-font4 = pygame.font.Font('Project/Fonts/04B_30__.TTF', 22)
-
-#sprite_sheet_image = pygame.image.load('Project/Images/BarryFullSpriteSheet.png').convert_alpha()
-#sprite_sheet = spritesheet.Spritesheet(sprite_sheet_image)
-
-# --- Load the highscore ---
-
-if os.path.exists('Project/highscore.txt'):
-
-    with open('Project/highscore.txt', 'r') as file:
-        high_score = file.read()
-
-else:
-
-    high_score = 0
-
-# Set a new highscore variable that can be changed whilst keeping the original score
-original_high_score = high_score
 
 # --- Classes ---
 
@@ -114,154 +89,6 @@ class Background():
     # --- Get the height of the ground image ---
     def get_ground_height(self):
         return self.ground_height
-
-
-
-class Scoreboard():
-
-    # --- Constructor ---
-    def __init__(self):
-
-        self.score = 0
-
-    # --- Functions ---
-
-    # --- Function for drawing necessary text ---
-    def draw_text(self, text, font, text_col, x, y):
-
-        # Create a drawable image
-        img = font.render(text, True, text_col)
-
-        # Draw the image
-        screen.blit(img, (x, y))
-
-    # --- Check if the player collects coins ---
-    def pickupcoins(self, option):
-
-        # Select one of two options for drawing the score
-        if option == 1:
-
-            # --- Option for during normal game running ---
-
-            # Draw the text before the number
-            self.draw_text("score:", font2, WHITE, Width - 65, 5)
-
-            # Check if the player collides with any coins, then delete any collided with coins
-            if pygame.sprite.spritecollide(myplayer, coingroup, True, pygame.sprite.collide_mask):
-
-                # Add 1 to the score if coin is collided with
-                self.score += 1
-
-            # End if
-
-            # Convert the score to a string so that it can be drawn on the screen
-            score = str(self.score)
-
-            # Draw the score in the top right of the screen
-            # Depending on the length of the score, move the scoreboard left so that it all fits on the screen
-            if self.score > 99:
-                self.draw_text(score, font1, WHITE, Width - 85, 20)
-            elif self.score > 9:
-                self.draw_text(score, font1, WHITE, Width - 65, 20)
-            else:
-                self.draw_text(score, font1, WHITE, Width - 45, 20)
-            # End if
-
-        else:
-
-            # --- Option for drawing the score on the death screen ---
-
-            # Draw the text in the top-middle of the screen
-            self.draw_text("score:", font1, WHITE, 285, 90)
-            score = str(self.score)
-            self.draw_text(score, font3, WHITE, 435, 85)  
-
-        # End if    
-
-    # --- Score Getter ---
-    def getscore(self):
-
-        return self.score
-
-    '''
-    # --- Check if the player collides with a barrier or laser and delete player if true ---
-    def checkplayercollision(self):
-        if pygame.sprite.groupcollide(playergroup, barriergroup, False, True, pygame.sprite.collide_mask) or pygame.sprite.groupcollide(playergroup, lasergroup, False, True, pygame.sprite.collide_mask):
-            return True
-        # End if
-    
-    # --- Check if a barrier collides with a coin and delete coins if true ---
-    def checkcoincollision(self):
-        if pygame.sprite.groupcollide(barriergroup, coingroup, False, True, pygame.sprite.collide_mask):
-
-            # Reset the coin group
-            coingroup.empty()
-        
-        # End if
-    '''
-
-    # --- Draw the highscore text ---
-    def draw_high_score(self, text, font, text_col, x, y):
-
-        # Create a drawable image
-        img = font.render(text, True, text_col)
-
-        # Draw the image
-        screen.blit(img, (x, y))
-
-    # --- Update the highscore file ---
-    def checkscore(self, score, highscore):
-
-        # Check if the current score is higher than the highscore
-        if int(score) > int(original_high_score):
-
-            # If true, update the temp highscore variable
-            highscore = score
-
-            # Update the external highscore file
-            with open('Project/highscore.txt', 'w') as file:
-                file.write(str(highscore))
-
-        # End if
-
-    # --- Draw the highscore ---
-    def drawhighscoretxt(self, option):
-
-        # Set up two options for drawing the highscore; in normal game running or deathscreen
-        if option == 1:
-
-            # Draw the highscore in the top left
-            self.draw_text("highscore:", font2, WHITE, 0, 2)
-
-        else:
-
-            # Draw the highscore in the bottom-middle of the screen
-            self.draw_text("highscore:", font1, WHITE, 240, 305)
-
-        # End if
-
-    # --- Disply text telling the player a new highscore has been achieve ---
-    def checknewscore(self, score, option):
-        
-        # Allow two options for regular playing and the deathscreen
-        if option == 1:
-
-            # If the score is higher than the highscore, display "NEW HIGHSCORE!" at the top-middle of the screen (regular running)
-            if int(score) > int(original_high_score):
-                self.draw_text("new highscore!", font3, WHITE, 180, 20)
-
-        else:
-
-            # If the score is higher than the highscore, displayer "NEWHIGHSCORE!" at the bottom middle of the screen (deathscreen)
-            if int(score) > int(original_high_score):
-                self.draw_text("new highscore!", font3, WHITE, 180, 350)
-
-        # End if
-
-    # --- Score setter ---
-    def setscore(self, score):
-        self.score = score
-
 
 
 
@@ -401,8 +228,6 @@ myplayer = Player()
 
 bg = Background()
 
-scoreboard = Scoreboard()
-
 # --- Add new objects to sprite groups ---
 
 playergroup.add(myplayer)
@@ -443,28 +268,6 @@ while not done:
 
     # Draw the ground
     bg.draw_ground()
-
-    # Check for changes to score, collisions with coins or objects etc.
-    scoreboard.pickupcoins(1)
-   # scoreboard.checkcoincollision()
-    scoreboard.drawhighscoretxt(1)
-    scoreboard.checknewscore(scoreboard.getscore(), 1)
-
-    '''
-    # If the player hits a laser or a barrier then change to the death game state
-    if scoreboard.checkplayercollision() == True:
-        death = True
-    # End if
-    '''
-
-    # Draw the score and highscore
-    scoreboard.draw_high_score(high_score, font1, WHITE, 45, 20)
-    scoreboard.checkscore(scoreboard.getscore(), high_score)
-        
-    # Update the highscore if higher than the score
-    if int(scoreboard.getscore()) > int(high_score):
-        high_score = scoreboard.getscore()
-        high_score = str(high_score)
 
     # Set the necessary speeds of background and objects
     scroll += 2
