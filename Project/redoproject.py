@@ -34,6 +34,8 @@ RED = (225, 0, 0)
 allspritegroup = pygame.sprite.Group()
 playergroup = pygame.sprite.Group()
 coingroup = pygame.sprite.Group()
+barriergroup = pygame.sprite.Group()
+lasergroup = pygame.sprite.Group()
 
 # --- Fonts ---
 
@@ -183,7 +185,7 @@ class Scoreboard():
 
         return self.score
 
-    '''
+    
     # --- Check if the player collides with a barrier or laser and delete player if true ---
     def checkplayercollision(self):
         if pygame.sprite.groupcollide(playergroup, barriergroup, False, True, pygame.sprite.collide_mask) or pygame.sprite.groupcollide(playergroup, lasergroup, False, True, pygame.sprite.collide_mask):
@@ -198,7 +200,7 @@ class Scoreboard():
             coingroup.empty()
         
         # End if
-    '''
+    
 
     # --- Draw the highscore text ---
     def draw_high_score(self, text, font, text_col, x, y):
@@ -298,6 +300,86 @@ class Player(pygame.sprite.Sprite):
         # If the player is below the top of the screen move the player up
         if self.rect.y > 0:
             self.rect.y += vertSpeed
+        # End if
+            
+
+
+class Barrier(pygame.sprite.Sprite):
+
+    # --- Constructor Function ---
+    def __init__(self, width, height, posX, posY):
+
+        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
+
+        # Load the image for the barrier
+        img = pygame.image.load("Project/Images/SpikyStick.png")
+
+        # Scale the image
+        self.image = pygame.transform.scale(img, (width, height))
+
+        # Create a mask for better collisions
+        self.mask = pygame.mask.from_surface(self.image)
+        self.mask_image = self.mask.to_surface()
+        
+        # Postiion
+        self.rect = self.image.get_rect()
+        self.rect.x = posX
+        self.rect.y = posY
+
+    # --- Functions ---
+
+    # --- Spawn the barriers ---
+    def spawn():
+
+        # If the number of barriers currently spawn is less than 2, spawn more
+        if len(barriergroup) < 2:
+
+            # Random number generated to decide how far away the barriers spawn from the player
+            barrierx = random.randint(800,1700)
+
+            # Random number generated to decide how many barriers to be spawned in cluster
+            nbarriers = random.randint(3,7)
+
+            # Random number generated to decide how far each barrier is away from one another in a cluster
+            barriergap = random.randint(200,250)
+
+            # Loop to spawn the number of needed barriers
+            for i in range(1, nbarriers):
+
+                # Random number generated to decide the height of each barrier
+                barrierheight = random.randint(120,250)
+
+                # Odd numbered barriers spawn on the floor, even numbered barriers spawn on the ceiling
+                if i % 2 == 0:
+
+                    # Instantiate new barrier
+                    newbarrier = Barrier(75, barrierheight, barrierx + (i * barriergap), -5)
+
+                    # Add to sprite group
+                    barriergroup.add(newbarrier)
+
+                else:
+
+                    # Instantiate new barrier
+                    newbarrier = Barrier(75, barrierheight, barrierx + (i * barriergap), Height - 195 + (216 - barrierheight))
+
+                    # Add to sprite group
+                    barriergroup.add(newbarrier)
+
+                # End if
+            # Next
+        # End if
+
+    # --- Update ---
+    def update(self):
+
+        # Move barriers left towards the player and increase the speed in accordance to the speed mod
+        self.rect.move_ip(COINSPEED * SPEEDMOD, 0)
+
+        # Once the barriers are off the screen, kill them so new ones can be spawned
+        if self.rect.x < -75:
+            self.kill()
         # End if
 
 
@@ -437,6 +519,7 @@ while not done:
 
     # Spawn obstacles and coins
     Coins.spawn()
+    Barrier.spawn()
 
     # Draw Background
     bg.draw_bg()
@@ -450,12 +533,12 @@ while not done:
     scoreboard.drawhighscoretxt(1)
     scoreboard.checknewscore(scoreboard.getscore(), 1)
 
-    '''
+    
     # If the player hits a laser or a barrier then change to the death game state
     if scoreboard.checkplayercollision() == True:
         death = True
     # End if
-    '''
+    
 
     # Draw the score and highscore
     scoreboard.draw_high_score(high_score, font1, WHITE, 45, 20)
@@ -472,10 +555,12 @@ while not done:
     # Draw the objects on the screen
     playergroup.draw(screen)
     coingroup.draw(screen)
+    barriergroup.draw(screen)
 
     # Update all objects
     allspritegroup.update()
     coingroup.update()
+    barriergroup.update()
 
     # Flip display to reveal new position of objects
     pygame.display.flip()
