@@ -550,7 +550,7 @@ class Barrier(pygame.sprite.Sprite):
 
 
 
-class Laser(pygame.sprite.Sprite):#
+class Laser(pygame.sprite.Sprite):
 
     # --- Constructor ---
     def __init__(self, length, x, y):

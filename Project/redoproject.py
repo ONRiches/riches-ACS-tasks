@@ -36,6 +36,7 @@ playergroup = pygame.sprite.Group()
 coingroup = pygame.sprite.Group()
 barriergroup = pygame.sprite.Group()
 lasergroup = pygame.sprite.Group()
+warninggroup = pygame.sprite.Group()
 
 # --- Fonts ---
 
@@ -381,6 +382,113 @@ class Barrier(pygame.sprite.Sprite):
         if self.rect.x < -75:
             self.kill()
         # End if
+            
+
+
+class Laser(pygame.sprite.Sprite):
+
+    # --- Constructor ---
+    def __init__(self, length, x, y):
+
+        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
+
+        # Set the length of the line
+        self.laserlength = length
+
+        # Create the laser
+        self.image = pygame.Surface((self.laserlength, 3))
+        self.image.fill(RED)
+
+        # Set the position of the laser
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+    # --- Functions ---
+
+    # --- Spawn ---
+    def spawn():
+
+        # If there are currently no lasers, spawn a new one
+        if len(lasergroup) == 0:
+
+            # Set a random length
+            laserlength = random.randint(150, 450)
+
+            # Set a random distance from the player
+            laserx = random.randint(800, 1700)
+
+            # Set a random height
+            lasery = random.randint(30, Height - 30)
+
+            # Instantiate new laser
+            newlaser = Laser(laserlength, laserx, lasery)
+
+            # Add new object to the sprite group
+            lasergroup.add(newlaser)
+
+            # Spawn the warnings relating to the laser
+            Warning.spawn(lasery)
+
+        # End if
+
+    # --- Update ---
+    def update(self):
+
+        # Move the laser left towards the player faster than other objects
+        self.rect.move_ip(COINSPEED * SPEEDMOD - 10, 0)
+
+        # Once the laser goes off the screen, kill it so another can be spawned
+        if self.rect.x + self.laserlength < -50:
+            self.kill()
+        # End if
+    
+    # --- y value getter ---
+    def gety(self):
+        return self.rect.y
+
+
+
+class Warning(pygame.sprite.Sprite):
+
+    # --- Constructor ---
+    def __init__(self, x, y):
+
+        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
+
+        # Draw the warning symbol on a red square
+        self.img = font4.render("!", True, BLACK)
+        self.image = pygame.Surface((25, 25))
+        self.image.fill(RED)
+
+        # Get the position of the warning
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+    # --- Functions ---
+
+    # --- Spawn wanrings ---
+    def spawn(temp):
+
+        # Instantiate objects at the same height as lasers
+        Warning1 = Warning(1, temp - 11)
+        Warning2 = Warning(Width - 26, temp - 11)
+
+        # Add the new objects to sprite group
+        warninggroup.add(Warning1)
+        warninggroup.add(Warning2)
+
+    # --- Update ---
+    def update(self):
+
+        screen.blit(self.img, (self.rect.x + 8, self.rect.y + 1))
+
+        # Once the relevant laser is killed, kill the warnings so new ones can be spawned
+        if len(lasergroup) == 0:
+            self.kill()
 
 
 
@@ -520,6 +628,7 @@ while not done:
     # Spawn obstacles and coins
     Coins.spawn()
     Barrier.spawn()
+    Laser.spawn()
 
     # Draw Background
     bg.draw_bg()
@@ -556,11 +665,15 @@ while not done:
     playergroup.draw(screen)
     coingroup.draw(screen)
     barriergroup.draw(screen)
+    lasergroup.draw(screen)
+    warninggroup.draw(screen)
 
     # Update all objects
     allspritegroup.update()
     coingroup.update()
     barriergroup.update()
+    lasergroup.update()
+    warninggroup.update()
 
     # Flip display to reveal new position of objects
     pygame.display.flip()

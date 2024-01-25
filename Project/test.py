@@ -33,6 +33,7 @@ RED = (225, 0, 0)
 allspritegroup = pygame.sprite.Group()
 playergroup = pygame.sprite.Group()
 coingroup = pygame.sprite.Group()
+barriergroup = pygame.sprite.Group()
 
 # --- Classes ---
 
@@ -125,6 +126,62 @@ class Player(pygame.sprite.Sprite):
         # If the player is below the top of the screen move the player up
         if self.rect.y > 0:
             self.rect.y += vertSpeed
+        # End if
+            
+
+
+class Barrier(pygame.sprite.Sprite):
+    
+    # --- Constructor Function ---
+    def __init__(self, width, height, posX, posY):
+
+        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
+
+        # Load the image for the barrier
+        img = pygame.image.load("Project/Images/SpikyStick.png")
+
+        # Scale the image
+        self.image = pygame.transform.scale(img, (width, height))
+
+        # Create a mask for better collisions
+        self.mask = pygame.mask.from_surface(self.image)
+        self.mask_image = self.mask.to_surface()
+        
+        # Postiion
+        self.rect = self.image.get_rect()
+        self.rect.x = posX
+        self.rect.y = posY
+
+    # --- Functions ---
+    def spawn():
+
+        x = random.randint(800,1500)
+
+        gap = random.randint(200,250)
+        
+        n = random.randint(3,7)
+
+        for i in range (1,n):
+            
+            height = random.randint(100,200)
+
+            if n % 2 == 0:
+                newbarrier = Barrier(50, height, x + (i * gap), 0)
+                barriergroup.add(newbarrier)
+            else:
+                newbarrier = Barrier(50, height, x + (i * gap), 0)  
+                barriergroup.add(newbarrier)
+
+    # --- Update ---
+    def update(self):
+
+        # Move coins to the left
+        self.rect.move_ip(COINSPEED * SPEEDMOD, 0)
+
+        # Kill coins once off the screen so that more can be spawned
+        if self.rect.x < -50:
+            self.kill()
         # End if
 
 
@@ -262,6 +319,7 @@ while not done:
 
     # Spawn obstacles and coins
     Coins.spawn()
+    Barrier.spawn()
 
     # Draw Background
     bg.draw_bg()
@@ -275,10 +333,12 @@ while not done:
     # Draw the objects on the screen
     playergroup.draw(screen)
     coingroup.draw(screen)
+    barriergroup.draw(screen)
 
     # Update all objects
     allspritegroup.update()
     coingroup.update()
+    barriergroup.update()
 
     # Flip display to reveal new position of objects
     pygame.display.flip()
