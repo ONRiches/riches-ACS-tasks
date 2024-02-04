@@ -37,6 +37,7 @@ coingroup = pygame.sprite.Group()
 barriergroup = pygame.sprite.Group()
 lasergroup = pygame.sprite.Group()
 warninggroup = pygame.sprite.Group()
+firegroup = pygame.sprite.Group()
 
 # --- Fonts ---
 
@@ -267,7 +268,6 @@ class Scoreboard():
 
 
 
-
 class Player(pygame.sprite.Sprite):
 
     # --- Constructor Function ---
@@ -276,9 +276,15 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         pygame.sprite.Sprite.__init__(self)
 
-        # Set the player as a placholder rectangle
-        self.image = pygame.Surface((10,20))
-        self.image.fill(WHITE)
+        # Load the spritesheet used on the player sprite
+        self.image1 = pygame.image.load("Project/Images/BarryRunning.png").convert_alpha()
+        
+        # Get the correct frame from the spritesheet
+        self.image = self.get_image(self.image1, 280, 288, 0)
+
+        # Create a mask for better collisions
+        self.mask = pygame.mask.from_surface(self.image)
+        self.mask_image = self.mask.to_surface()
 
         # Set Player Position
         self.rect = self.image.get_rect()
@@ -286,6 +292,22 @@ class Player(pygame.sprite.Sprite):
         self.rect.y = Height - 60 - 20
 
     # --- Functions ---
+
+    # --- Function to take a chosen frame from the spritesheet ---
+    def get_image(self, sheet, width, height, frame):
+
+        # Load the sprite sheet
+        image = pygame.Surface((width, height)).convert_alpha()
+
+        # Blit the correct frame
+        image.blit(sheet, (0,0), (frame * width, 0, width, height))
+
+        # Scale the image
+        image = pygame.transform.scale(image, (50,50))
+
+        # Set background to black
+        image.set_colorkey(BLACK)
+        return image
 
     # --- x value getter ---
     def get_x(self):
@@ -302,6 +324,36 @@ class Player(pygame.sprite.Sprite):
         if self.rect.y > 0:
             self.rect.y += vertSpeed
         # End if
+            
+
+
+class Fire(pygame.sprite.Sprite):
+
+    # --- Constructor Function ---
+    def __init__(self, x, y):
+            
+        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
+
+        # Load the flame image
+        image = pygame.image.load("Project/Images/Pixel Flame Spritesheet.png")
+
+        # Scale the flame up
+        self.image = pygame.transform.scale(image, (35, 35))
+
+        # Positon
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+    # --- Spawn the flame underneath the player when flying ---
+    def fly(self, x, y):
+        
+        # Instantiate a Fire object
+        myfire = Fire(x, y)
+
+        # Add new object to sprite group
+        firegroup.add(myfire)
             
 
 
@@ -618,6 +670,21 @@ while not done:
     keys = pygame.key.get_pressed()
     if keys[pygame.K_UP]:
         myplayer.fly(JUMPSPEED)
+        
+        # If the player is flying, instantiate a fire object underneath the jetpack
+        Fire.fly(0,myplayer.get_x(),myplayer.get_y() + 50)
+    # End if
+
+    else:
+
+        # If the player is not flying, delete any flames
+        firegroup.empty()
+        
+    # End if
+
+    # Allow there to be only one flame at once
+    if len(firegroup) > 1:
+        firegroup.empty()
     # End if
 
     # Prevent player from falling through the floor
@@ -638,7 +705,7 @@ while not done:
 
     # Check for changes to score, collisions with coins or objects etc.
     scoreboard.pickupcoins(1)
-   # scoreboard.checkcoincollision()
+    scoreboard.checkcoincollision()
     scoreboard.drawhighscoretxt(1)
     scoreboard.checknewscore(scoreboard.getscore(), 1)
 
@@ -667,6 +734,7 @@ while not done:
     barriergroup.draw(screen)
     lasergroup.draw(screen)
     warninggroup.draw(screen)
+    firegroup.draw(screen)
 
     # Update all objects
     allspritegroup.update()
@@ -674,6 +742,7 @@ while not done:
     barriergroup.update()
     lasergroup.update()
     warninggroup.update()
+    firegroup.update()
 
     # Flip display to reveal new position of objects
     pygame.display.flip()
